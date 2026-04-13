@@ -1,0 +1,52 @@
+<app-particle-background></app-particle-background>
+
+<div class="register-container">
+  <div class="register-grid"></div>
+
+  <div class="glass-card register-card">
+
+    <div class="register-logo">
+      <div class="logo-ring">✦</div>
+    </div>
+
+    <div class="register-title neon-text">Create Account</div>
+    <div class="register-subtitle">Join Global Text Summarizer</div>
+    <div class="register-divider"></div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Full Name</mat-label>
+      <input matInput [(ngModel)]="name" type="text"
+             (keydown.enter)="onRegister()">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput [(ngModel)]="email" type="email"
+             (keydown.enter)="onRegister()">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input matInput [(ngModel)]="password" type="password"
+             (keydown.enter)="onRegister()">
+    </mat-form-field>
+
+    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+    <div class="success-message" *ngIf="successMessage">
+      ✓ {{ successMessage }}
+    </div>
+
+    <button class="register-btn" mat-raised-button
+            (click)="onRegister()"
+            [disabled]="isLoading">
+      {{ isLoading ? 'Creating account...' : 'Create Account' }}
+    </button>
+
+    <div class="login-link">
+      Already have an account?
+      <a routerLink="/login">Sign in here</a>
+    </div>
+
+  </div>
+</div>

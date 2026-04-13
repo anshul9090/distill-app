@@ -1,0 +1,28 @@
+# Secrets - NEVER commit these
+appsettings.Development.json
+appsettings.Production.json
+
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+*.log
+
+# Node / Angular
+**/node_modules/
+dist/
+.angular/
+
+# Env files
+.env
+.env.*
+
+# DB
+*.sqlite
+*.db
+
+# OS
+.DS_Store
+Thumbs.db

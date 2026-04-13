@@ -1,0 +1,42 @@
+/* DEFAULT DARK (PURPLE) */
+:root {
+  --bg-main: #0a0a0f;
+  --bg-glass: rgba(20, 20, 35, 0.7);
+
+  --primary: #a855f7;
+  --secondary: #22d3ee;
+
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+
+  --border: rgba(255,255,255,0.1);
+}
+
+/* GREEN THEME */
+body.theme-green {
+  --primary: #22c55e;
+  --secondary: #4ade80;
+}
+
+/* BLUE THEME */
+body.theme-blue {
+  --primary: #3b82f6;
+  --secondary: #06b6d4;
+}
+
+/* CYBERPUNK */
+body.theme-cyber {
+  --primary: #00ff9f;
+  --secondary: #00d4ff;
+}
+
+/* LIGHT MODE */
+body.theme-light {
+  --bg-main: #f8fafc;
+  --bg-glass: rgba(255,255,255,0.8);
+
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+
+  --border: rgba(0,0,0,0.1);
+}

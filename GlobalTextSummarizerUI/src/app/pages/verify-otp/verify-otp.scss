@@ -1,0 +1,23 @@
+.verify-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--dark-bg);
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.verify-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.8s ease forwards;
+
+  @media (max-width: 480px) {
+    padding: 16px;
+  }
+}

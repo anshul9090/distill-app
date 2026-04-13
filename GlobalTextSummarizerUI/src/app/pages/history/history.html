@@ -1,0 +1,74 @@
+<app-particle-background></app-particle-background>
+
+<div class="history-container">
+
+  <mat-toolbar color="primary">
+    <span class="toolbar-brand">📋 Summary History</span>
+    <span class="spacer"></span>
+    <button mat-button (click)="goToDashboard()">🏠 Dashboard</button>
+    <button mat-button color="warn" (click)="clearAll()">🗑 Clear All</button>
+    <button mat-button (click)="onLogout()">Logout</button>
+  </mat-toolbar>
+
+  <div class="content-area">
+
+    <!-- Stats bar -->
+    <div class="stats-bar" *ngIf="!isLoading && summaries.length > 0">
+      <div class="stat-chip">
+        <span class="stat-num">{{ summaries.length }}</span>
+        <span class="stat-label">Total Summaries</span>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading your history...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="error-banner">
+      ⚠ {{ errorMessage }}
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!isLoading && summaries.length === 0 && !errorMessage"
+         class="empty-state">
+      <div class="empty-icon">📄</div>
+      <h3>No summaries yet</h3>
+      <p>Go to the dashboard and create your first summary!</p>
+      <button class="go-btn" mat-raised-button (click)="goToDashboard()">
+        Go to Dashboard →
+      </button>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards-grid">
+      <div *ngFor="let summary of summaries; let i = index"
+           class="summary-card glass-card"
+           [style.animation-delay]="(i * 0.06) + 's'">
+
+        <div class="card-header">
+          <div class="card-meta">
+            <span class="input-badge">{{ summary.inputType }}</span>
+            <span class="lang-badge">{{ summary.language }}</span>
+          </div>
+          <span class="card-date">
+            {{ summary.createdAt | date:'MMM d, y · h:mm a' }}
+          </span>
+        </div>
+
+        <p class="summary-text">{{ summary.summaryText }}</p>
+
+        <div class="card-footer">
+          <button class="delete-btn" mat-button
+                  (click)="deleteSummary(summary.id)">
+            🗑 Delete
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

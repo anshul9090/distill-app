@@ -1,0 +1,184 @@
+<app-particle-background></app-particle-background>
+
+<div class="admin-container">
+
+  <!-- Toolbar -->
+  <mat-toolbar>
+    <span class="toolbar-title">👑 Admin Panel</span>
+    <span class="spacer"></span>
+    <button mat-button (click)="goBack()">🏠 Dashboard</button>
+    <button mat-button (click)="onLogout()">Logout</button>
+  </mat-toolbar>
+
+  <!-- Error banner -->
+  <div class="error-banner" *ngIf="errorMessage">⚠ {{ errorMessage }}</div>
+
+  <!-- Stats row -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-body">
+        <div class="stat-num">{{ users.length }}</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-body">
+        <div class="stat-num">{{ activeUsers }}</div>
+        <div class="stat-label">Active</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🗑</div>
+      <div class="stat-body">
+        <div class="stat-num">{{ deletedUsers }}</div>
+        <div class="stat-label">Deleted</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📄</div>
+      <div class="stat-body">
+        <div class="stat-num">{{ summaries.length }}</div>
+        <div class="stat-label">Summaries</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS CARD -->
+  <div class="admin-card">
+    <div class="card-header">
+      <span class="card-title">👥 Users</span>
+      <div class="search-wrap">
+        <input class="search-input"
+               [(ngModel)]="userSearch"
+               (input)="applyUserSearch()"
+               placeholder="Search by name or email…">
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="usersLoading" class="loading-row">
+      <div class="spinner"></div>
+      <span>Loading users…</span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap" *ngIf="!usersLoading">
+      <table mat-table [dataSource]="filteredUsers">
+
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let u">{{ u.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let u">{{ u.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let u">
+            <span [class]="u.roleId === 1 ? 'badge-admin' : 'badge-user'">
+              {{ u.roleId === 1 ? '👑 Admin' : '👤 User' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let u">
+            <span [class]="u.isDeleted ? 'deleted' : 'active'">
+              {{ u.isDeleted ? 'Deleted' : 'Active' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="joined">
+          <th mat-header-cell *matHeaderCellDef>Joined</th>
+          <td mat-cell *matCellDef="let u">
+            {{ u.createdAt | date:'MMM d, y' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let u">
+            <button mat-icon-button color="warn"
+                    *ngIf="!u.isDeleted"
+                    title="Delete user"
+                    (click)="deleteUser(u.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-icon-button color="primary"
+                    *ngIf="u.isDeleted"
+                    title="Restore user"
+                    (click)="restoreUser(u.id)">
+              <mat-icon>restore</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+
+      <div *ngIf="filteredUsers.length === 0" class="empty-state">
+        No users found matching "{{ userSearch }}"
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARIES CARD -->
+  <div class="admin-card">
+    <div class="card-header">
+      <span class="card-title">📄 Summaries</span>
+      <div class="search-wrap">
+        <input class="search-input"
+               [(ngModel)]="summarySearch"
+               (input)="applySummarySearch()"
+               placeholder="Search by email or type…">
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="summariesLoading" class="loading-row">
+      <div class="spinner"></div>
+      <span>Loading summaries…</span>
+    </div>
+
+    <!-- List -->
+    <div *ngIf="!summariesLoading">
+      <div *ngFor="let s of pagedSummaries" class="summary-box">
+        <div class="summary-meta">
+          <span class="summary-email">{{ s.userEmail }}</span>
+          <span class="summary-type">{{ s.inputType }}</span>
+          <span class="summary-date">{{ s.createdAt | date:'MMM d, y' }}</span>
+        </div>
+        <p class="summary-text">{{ s.summaryText }}</p>
+      </div>
+
+      <div *ngIf="filteredSummaries.length === 0" class="empty-state">
+        No summaries found.
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalSummaryPages > 1">
+        <button class="page-btn" (click)="prevPage()"
+                [disabled]="summaryPage === 1">← Prev</button>
+        <span class="page-info">{{ summaryPage }} / {{ totalSummaryPages }}</span>
+        <button class="page-btn" (click)="nextPage()"
+                [disabled]="summaryPage === totalSummaryPages">Next →</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,165 @@
+<app-particle-background></app-particle-background>
+
+<div class="login-container">
+  <div class="login-grid"></div>
+  <div class="login-orb-mid"></div>
+
+  <div class="glass-card login-card">
+
+    <!-- Theme switcher -->
+    <div class="theme-btn-wrap">
+      <button mat-icon-button [matMenuTriggerFor]="themeMenu" title="Change Theme">
+        🎨
+      </button>
+      <mat-menu #themeMenu="matMenu">
+        <button mat-menu-item
+                *ngFor="let theme of themeService.themes"
+                (click)="themeService.applyTheme(theme.name)">
+          {{theme.icon}} {{theme.label}}
+        </button>
+      </mat-menu>
+    </div>
+
+    <!-- Flask icon — spills on hover/touch -->
+    <div class="flask-wrap"
+         #flaskWrap
+         (mouseenter)="onFlaskHover()"
+         (touchstart)="onFlaskHover()">
+      <svg #flaskSvg class="flask-svg" viewBox="0 0 70 92" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="liqGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.75"/>
+            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0.75"/>
+          </linearGradient>
+          <clipPath id="flaskClip">
+            <path d="M24 36 L13 62 Q8 92 35 92 Q62 92 57 62 L46 36 Z"/>
+          </clipPath>
+        </defs>
+        <!-- stopper -->
+        <rect x="23" y="1" width="24" height="8" rx="3"
+              fill="rgba(249,115,22,0.3)"
+              stroke="rgba(249,115,22,0.55)" stroke-width="1.5"/>
+        <!-- neck -->
+        <rect x="25" y="7" width="20" height="31" rx="3"
+              fill="rgba(255,255,255,0.04)"
+              stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
+        <!-- body -->
+        <path d="M24 36 L13 62 Q8 92 35 92 Q62 92 57 62 L46 36 Z"
+              fill="rgba(255,255,255,0.04)"
+              stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
+        <!-- liquid -->
+        <rect x="8" y="66" width="54" height="30"
+              fill="url(#liqGrad)" clip-path="url(#flaskClip)"/>
+        <!-- liquid surface -->
+        <ellipse cx="35" cy="66" rx="19" ry="3.5"
+                 fill="rgba(255,255,255,0.18)" clip-path="url(#flaskClip)"/>
+        <!-- bubbles -->
+        <circle class="flask-bubble b1" cx="24" cy="74" r="2.5"
+                fill="rgba(249,115,22,0.55)"/>
+        <circle class="flask-bubble b2" cx="42" cy="80" r="2"
+                fill="rgba(236,72,153,0.55)"/>
+        <circle class="flask-bubble b3" cx="33" cy="70" r="1.8"
+                fill="rgba(251,191,36,0.55)"/>
+        <!-- shine neck -->
+        <rect x="29" y="10" width="5" height="22" rx="2"
+              fill="rgba(255,255,255,0.09)"/>
+        <!-- shine body -->
+        <ellipse cx="20" cy="57" rx="4" ry="9"
+                 fill="rgba(255,255,255,0.07)" transform="rotate(-18,20,57)"/>
+      </svg>
+    </div>
+
+    <!-- Logo animation stage — click to explode+reassemble -->
+    <div class="logo-stage" (click)="onLogoClick()" style="cursor:pointer;">
+      <span class="logo-part logo-dis"   #logoDis>DIS</span>
+      <span class="logo-part logo-still" #logoStill>STILL</span>
+      <div class="logo-burst" #logoBurst></div>
+      <span class="logo-merged" #logoMerged>DISTILL</span>
+    </div>
+
+    <!-- Slider -->
+    <div class="text-slider">
+      <div class="slider-text">{{ currentSliderText }}</div>
+    </div>
+
+    <div class="login-subtitle">Sign in to your account</div>
+    <div class="login-divider"></div>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" [(ngModel)]="email"
+             (keydown.enter)="onLogin()"
+             placeholder="Enter your email">
+    </mat-form-field>
+
+    <!-- Password + monkey -->
+    <div class="pw-wrap">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput
+               [type]="showPassword ? 'text' : 'password'"
+               [(ngModel)]="password"
+               (keydown.enter)="onLogin()"
+               (focus)="onPasswordFocus()"
+               (blur)="onPasswordBlur()"
+               placeholder="Enter your password">
+      </mat-form-field>
+
+      <button class="monkey-btn"
+              type="button"
+              [attr.data-state]="monkeyState"
+              (click)="togglePassword()"
+              [title]="showPassword ? 'Hide password' : 'Show password'">
+        <svg class="monkey-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="52" r="13" fill="#7a3b10"/>
+          <circle cx="82" cy="52" r="13" fill="#7a3b10"/>
+          <circle cx="18" cy="52" r="8"  fill="#c1714e"/>
+          <circle cx="82" cy="52" r="8"  fill="#c1714e"/>
+          <circle cx="50" cy="50" r="34" fill="#8B4513"/>
+          <ellipse cx="50" cy="58" rx="22" ry="17" fill="#c1714e"/>
+          <circle cx="37" cy="44" r="9" fill="white"/>
+          <circle cx="63" cy="44" r="9" fill="white"/>
+          <circle class="pupil-l" cx="37" cy="44" r="5" fill="#1a1a1a"/>
+          <circle class="pupil-r" cx="63" cy="44" r="5" fill="#1a1a1a"/>
+          <circle cx="39" cy="42" r="1.8" fill="white" opacity=".9"/>
+          <circle cx="65" cy="42" r="1.8" fill="white" opacity=".9"/>
+          <g class="monkey-lhand">
+            <ellipse cx="29" cy="51" rx="16" ry="12" fill="#6B3410" transform="rotate(-15,29,51)"/>
+            <circle cx="18" cy="44" r="5.5" fill="#6B3410"/>
+            <circle cx="24" cy="40" r="5.5" fill="#6B3410"/>
+            <circle cx="31" cy="38" r="5.5" fill="#6B3410"/>
+            <circle cx="38" cy="39" r="5.5" fill="#6B3410"/>
+          </g>
+          <g class="monkey-rhand">
+            <ellipse cx="71" cy="51" rx="16" ry="12" fill="#6B3410" transform="rotate(15,71,51)"/>
+            <circle cx="82" cy="44" r="5.5" fill="#6B3410"/>
+            <circle cx="76" cy="40" r="5.5" fill="#6B3410"/>
+            <circle cx="69" cy="38" r="5.5" fill="#6B3410"/>
+            <circle cx="62" cy="39" r="5.5" fill="#6B3410"/>
+          </g>
+          <ellipse cx="46" cy="63" rx="3" ry="2.5" fill="#6B3410"/>
+          <ellipse cx="54" cy="63" rx="3" ry="2.5" fill="#6B3410"/>
+          <path class="mouth-smile"
+                d="M42 71 Q50 78 58 71"
+                stroke="#6B3410" stroke-width="2.5"
+                fill="none" stroke-linecap="round"/>
+          <ellipse class="mouth-o" cx="50" cy="72" rx="5" ry="4" fill="#6B3410"/>
+        </svg>
+      </button>
+    </div>
+
+    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+    <button class="login-btn" mat-raised-button
+            (click)="onLogin()" [disabled]="isLoading">
+      {{ isLoading ? 'Signing in...' : 'Sign In' }}
+    </button>
+
+    <div class="register-link">
+      Don't have an account?
+      <a routerLink="/register">Create one here</a>
+    </div>
+
+  </div>
+</div>
