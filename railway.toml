@@ -1,6 +1,6 @@
 [build]
-builder = "nixpacks"
-buildCommand = "dotnet publish GlobalTextSummarizer/GlobalTextSummarizer.csproj -c Release -o out"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
 
 [deploy]
 startCommand = "dotnet out/GlobalTextSummarizer.dll"
