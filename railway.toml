@@ -3,5 +3,4 @@ builder = "dockerfile"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "dotnet out/GlobalTextSummarizer.dll"
 restartPolicyType = "ON_FAILURE"
