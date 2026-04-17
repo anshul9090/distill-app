@@ -1,0 +1,7 @@
+[build]
+builder = "nixpacks"
+buildCommand = "dotnet publish GlobalTextSummarizer/GlobalTextSummarizer.csproj -c Release -o out"
+
+[deploy]
+startCommand = "dotnet out/GlobalTextSummarizer.dll"
+restartPolicyType = "ON_FAILURE"
