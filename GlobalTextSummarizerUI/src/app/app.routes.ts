@@ -1,31 +1,32 @@
 import { Routes } from '@angular/router';
-import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { History } from './pages/history/history';
 import { authGuard } from './guards/auth-guard';
 import { VerifyOtp } from './pages/verify-otp/verify-otp';
 import { adminGuard } from './guards/admin-guard';
+import { LandingComponent } from './pages/landing/landing';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
+  { path: '',           component: LandingComponent },          // Landing IS the login now
+  { path: 'login',      redirectTo: '', pathMatch: 'full' },    // /login → landing
+  { path: 'register',   component: Register },
   { path: 'verify-otp', component: VerifyOtp },
-    { 
-    path: 'dashboard', 
+  {
+    path: 'dashboard',
     component: Dashboard,
-    canActivate: [authGuard]  // ← protected!
+    canActivate: [authGuard]
   },
-  {     path: 'history', 
+  {
+    path: 'history',
     component: History,
-    canActivate: [authGuard]  // ← protected!
+    canActivate: [authGuard]
   },
- {
-  path: 'admin',
-  loadComponent: () =>
-    import('./pages/admin/admin').then(m => m.Admin),
-  canActivate: [authGuard, adminGuard]   // 🔥 ADD THIS
-},
-  { path: '**', redirectTo: 'login' }
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./pages/admin/admin').then(m => m.Admin),
+    canActivate: [authGuard, adminGuard]
+  },
+  { path: '**', redirectTo: '' }
 ];

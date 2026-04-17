@@ -1,0 +1,257 @@
+<!-- ═══════════════════════════════════════════════════════════
+     DISTILL — Landing Page v2
+     Layout: Fixed navbar · Split hero (login + video)
+             · Scrollable sections with reveal animations
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- Dot-grid background texture layer -->
+<div class="dot-grid" aria-hidden="true"></div>
+
+<!-- ── Navbar ─────────────────────────────────────────────── -->
+<nav class="navbar" [class.scrolled]="scrolled">
+  <a class="nav-brand" routerLink="/">
+    <span class="brand-icon">⚗️</span>
+    <span class="brand-name">DISTILL</span>
+  </a>
+  <div class="nav-actions">
+    <a class="btn btn-ghost" routerLink="/register">Create account</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     SPLIT HERO
+     Left  → Login form
+     Right → Particles + Video
+     ══════════════════════════════════════════════════════════ -->
+<section class="split-hero">
+
+  <!-- ── LEFT: Login panel ───────────────────────────────── -->
+  <div class="login-panel">
+    <div class="login-card">
+
+      <!-- Social proof badge -->
+      <div class="social-proof">
+        <span class="proof-dot"></span>
+        <span>Built for students · Groq AI · 12 languages</span>
+      </div>
+
+      <!-- Brand -->
+      <div class="login-brand">
+        <span class="flask">⚗️</span>
+        <h1>Welcome back</h1>
+        <p class="login-sub">Sign in to DISTILL and summarize smarter.</p>
+      </div>
+
+      <!-- Error banner -->
+      <div class="error-banner" *ngIf="loginError">
+        <span>⚠️</span> {{ loginError }}
+      </div>
+
+      <!-- Form -->
+      <div class="login-form">
+
+        <div class="field-group">
+          <label>Email address</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              [(ngModel)]="loginData.email"
+              (keyup.enter)="onLogin()"
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <!-- Password field with monkey -->
+        <div class="field-group">
+          <div class="label-row">
+            <label>Password</label>
+            <a class="forgot-link" routerLink="/verify-otp">Forgot password?</a>
+          </div>
+
+          <!-- Monkey icon — reacts to password field state -->
+          <div class="monkey-row">
+            <div class="monkey-wrap" [class.covered]="monkeyState === 'covered'" [class.peeking]="monkeyState === 'peeking'">
+              <span class="monkey-face">{{ monkeyEmoji }}</span>
+              <div class="monkey-glow"></div>
+            </div>
+          </div>
+
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Enter your password"
+              [(ngModel)]="loginData.password"
+              (focus)="onPasswordFocus()"
+              (blur)="onPasswordBlur()"
+              (keyup.enter)="onLogin()"
+              autocomplete="current-password"
+            />
+            <button class="eye-btn" type="button" (click)="onTogglePassword()">
+              {{ showPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-signin" (click)="onLogin()" [disabled]="loginLoading">
+          <span *ngIf="!loginLoading">Sign in →</span>
+          <span *ngIf="loginLoading" class="spinner"></span>
+        </button>
+
+        <p class="register-prompt">
+          New to DISTILL?
+          <a routerLink="/register">Create a free account</a>
+        </p>
+
+      </div><!-- /login-form -->
+
+      <!-- Format pills teaser -->
+      <div class="format-pills">
+        <span class="pills-label">Outputs:</span>
+        <span class="pill" *ngFor="let f of formats">
+          {{ f.icon }} {{ f.label }}
+        </span>
+      </div>
+
+    </div><!-- /login-card -->
+  </div><!-- /login-panel -->
+
+  <!-- ── RIGHT: Video + particles ────────────────────────── -->
+  <div class="video-panel">
+    <canvas #particleCanvas class="particles"></canvas>
+
+    <div class="video-panel-content">
+      <p class="video-eyebrow">
+        <span class="eyebrow-dot"></span>
+        See it in action
+      </p>
+      <h2 class="video-headline">
+        Summarize anything.<br>
+        <span class="gradient-text">In seconds.</span>
+      </h2>
+      <p class="video-desc">
+        Text, PDFs, URLs, images — DISTILL converts them into
+        crisp summaries, flashcards, and Q&amp;A — powered by AI.
+      </p>
+
+      <!-- Browser chrome mockup around video -->
+      <div class="browser-mockup">
+        <div class="chrome-bar">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="url-bar">⚗️ distill.app · Demo</span>
+        </div>
+        <div class="video-container">
+          <iframe
+            [src]="videoUrl"
+            title="DISTILL Demo"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <!-- Glow behind mockup -->
+        <div class="mockup-glow"></div>
+      </div>
+
+    </div>
+  </div><!-- /video-panel -->
+
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     BELOW THE FOLD
+     ══════════════════════════════════════════════════════════ -->
+
+<!-- ── Stats bar ────────────────────────────────────────────── -->
+<div class="stats-bar reveal">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <span class="stat-num">4</span>
+      <span class="stat-label">Input Types</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num">12</span>
+      <span class="stat-label">Languages</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num">4</span>
+      <span class="stat-label">Output Formats</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num">0</span>
+      <span class="stat-label">Prompt Writing Needed</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── How it works ─────────────────────────────────────────── -->
+<section class="section how-it-works">
+  <div class="section-inner">
+    <span class="section-label reveal">How it works</span>
+    <h2 class="reveal">Three steps. Zero effort.</h2>
+    <p class="section-sub reveal">From raw content to polished summary — no setup, no learning curve.</p>
+
+    <div class="steps-grid">
+      <div class="step-card reveal"
+           *ngFor="let step of steps; let i = index"
+           [style.animation-delay]="(i * 0.12) + 's'">
+        <div class="step-num-circle">{{ step.num }}</div>
+        <div class="step-icon">{{ step.icon }}</div>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.desc }}</p>
+        <div class="step-top-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Input types ─────────────────────────────────────────── -->
+<section class="section features-section">
+  <div class="section-inner">
+    <span class="section-label reveal">Input types</span>
+    <h2 class="reveal">Works with everything you already have</h2>
+    <p class="section-sub reveal">No conversion tools. No copy-pasting workarounds.</p>
+
+    <div class="features-grid">
+      <div class="feature-card reveal"
+           *ngFor="let f of features; let i = index"
+           [style.animation-delay]="(i * 0.1) + 's'">
+        <div class="feature-icon-wrap">
+          <span class="feature-icon">{{ f.icon }}</span>
+        </div>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.desc }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Final CTA ─────────────────────────────────────────────── -->
+<section class="section cta-section">
+  <div class="cta-glow"></div>
+  <div class="cta-content reveal">
+    <span class="cta-flask">⚗️</span>
+    <h2>Ready to summarize smarter?</h2>
+    <p>Join students and researchers already using DISTILL every day.</p>
+    <a class="btn-signin cta-btn" routerLink="/register">Get started free →</a>
+    <span class="cta-note">No credit card. No setup. Just AI.</span>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────────── -->
+<footer class="footer">
+  <span class="footer-brand">⚗️ DISTILL</span>
+  <span class="footer-copy">© 2025 DISTILL. Built with ☕ as a BCA capstone.</span>
+  <div class="footer-links">
+    <a routerLink="/">Home</a>
+    <a routerLink="/register">Register</a>
+  </div>
+</footer>

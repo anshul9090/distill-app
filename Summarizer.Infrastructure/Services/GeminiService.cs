@@ -51,7 +51,6 @@ namespace Summarizer.Infrastructure.Services
             var json = JsonSerializer.Serialize(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // Groq needs Authorization header
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(
                 "Authorization", $"Bearer {apiKey}");
@@ -60,10 +59,7 @@ namespace Summarizer.Infrastructure.Services
             var responseJson = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(responseJson);
 
-
-
             var summaryText = doc.RootElement
-
                 .GetProperty("choices")[0]
                 .GetProperty("message")
                 .GetProperty("content")
@@ -90,6 +86,7 @@ namespace Summarizer.Infrastructure.Services
                 CreatedAt = DateTime.UtcNow
             };
         }
+
         public async Task<List<SummaryResponse>> GetHistoryAsync(int userId)
         {
             var summaries = await _dbContext.Summaries
@@ -106,6 +103,7 @@ namespace Summarizer.Infrastructure.Services
                 CreatedAt = s.CreatedAt
             }).ToList();
         }
+
         public async Task DeleteSummaryAsync(int id, int userId)
         {
             var summary = await _dbContext.Summaries
@@ -117,6 +115,7 @@ namespace Summarizer.Infrastructure.Services
                 await _dbContext.SaveChangesAsync();
             }
         }
+
         public async Task ClearAllSummariesAsync(int userId)
         {
             var summaries = await _dbContext.Summaries
@@ -126,7 +125,6 @@ namespace Summarizer.Infrastructure.Services
             _dbContext.Summaries.RemoveRange(summaries);
             await _dbContext.SaveChangesAsync();
         }
-
 
         private string BuildPrompt(SummaryRequest request)
         {
@@ -138,6 +136,58 @@ namespace Summarizer.Infrastructure.Services
                 _ => "in 2-3 sentences"
             };
 
+            // ── FLASHCARDS FORMAT ──────────────────────────────────
+            if (request.Format == "Flashcards")
+            {
+                return $@"Generate flashcards from the following content in {request.Language} language.
+
+Output EXACTLY in this format — nothing else, no introduction, no extra text:
+
+FLASHCARD::Term or concept here::Definition or explanation here
+FLASHCARD::Term or concept here::Definition or explanation here
+FLASHCARD::Term or concept here::Definition or explanation here
+
+Rules:
+- Generate between 5 and 10 flashcards depending on content richness
+- Each line must start with FLASHCARD::
+- Use :: as separator between term and definition
+- Term should be short (1-5 words)
+- Definition should be clear and concise (1-2 sentences)
+- Both term and definition must be in {request.Language} language
+- Do NOT number the cards
+- Do NOT add any intro or closing text
+
+Content:
+{request.Content}";
+            }
+
+            // ── QUESTIONS FORMAT ───────────────────────────────────
+            if (request.Format == "Questions")
+            {
+                return $@"Generate exam-style questions with answers from the following content in {request.Language} language.
+
+Output EXACTLY in this format — nothing else, no introduction, no extra text:
+
+QUESTION::Question text here::Answer text here
+QUESTION::Question text here::Answer text here
+QUESTION::Question text here::Answer text here
+
+Rules:
+- Generate between 5 and 8 questions
+- Each line must start with QUESTION::
+- Use :: as separator between question and answer
+- Questions should test understanding, not just memorization
+- Answers should be clear and complete (1-3 sentences)
+- Both question and answer must be in {request.Language} language
+- Mix different question types: what, why, how, explain, compare
+- Do NOT number the questions
+- Do NOT add any intro or closing text
+
+Content:
+{request.Content}";
+            }
+
+            // ── EXISTING FORMATS (Paragraph / Bullets) ─────────────
             var formatInstruction = request.Format switch
             {
                 "Bullets" => "Format the summary as clean bullet points. Each point should start with • symbol.",

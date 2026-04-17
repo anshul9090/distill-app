@@ -16,8 +16,58 @@
     <div class="stats-bar" *ngIf="!isLoading && summaries.length > 0">
       <div class="stat-chip">
         <span class="stat-num">{{ summaries.length }}</span>
-        <span class="stat-label">Total Summaries</span>
+        <span class="stat-label">Total</span>
       </div>
+      <div class="stat-chip" *ngIf="isFiltering">
+        <span class="stat-num">{{ filteredSummaries.length }}</span>
+        <span class="stat-label">Filtered</span>
+      </div>
+    </div>
+
+    <!-- ── SEARCH + FILTER BAR ──────────────────────────── -->
+    <div class="filter-bar" *ngIf="!isLoading && summaries.length > 0">
+
+      <!-- Search input -->
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input"
+               type="text"
+               [(ngModel)]="searchQuery"
+               placeholder="Search summaries or tags...">
+        <button class="search-clear" *ngIf="searchQuery" (click)="searchQuery = ''">✕</button>
+      </div>
+
+      <!-- Type filter -->
+      <div class="filter-chips">
+        <button class="filter-chip"
+                *ngFor="let type of inputTypes"
+                [class.active]="filterType === type"
+                (click)="filterType = type">
+          {{ type === 'All' ? '📋 All' :
+             type === 'Text' ? '📝 Text' :
+             type === 'PDF' ? '📄 PDF' :
+             type === 'URL' ? '🔗 URL' : '🖼️ Image' }}
+        </button>
+      </div>
+
+      <!-- Tag filter -->
+      <div class="tag-filter-row" *ngIf="allUsedTags.length > 0">
+        <span class="tag-filter-label">🏷 Filter by tag:</span>
+        <button class="filter-chip tag-chip"
+                [class.active]="filterTag === 'All'"
+                (click)="filterTag = 'All'">All</button>
+        <button class="filter-chip tag-chip"
+                *ngFor="let tag of allUsedTags"
+                [class.active]="filterTag === tag"
+                (click)="filterTag = tag">
+          {{ tag }}
+        </button>
+      </div>
+
+      <!-- Reset -->
+      <button class="reset-btn" *ngIf="isFiltering" (click)="resetFilters()">
+        ✕ Clear filters
+      </button>
     </div>
 
     <!-- Loading -->
@@ -27,24 +77,27 @@
     </div>
 
     <!-- Error -->
-    <div *ngIf="errorMessage" class="error-banner">
-      ⚠ {{ errorMessage }}
-    </div>
+    <div *ngIf="errorMessage" class="error-banner">⚠ {{ errorMessage }}</div>
 
-    <!-- Empty state -->
-    <div *ngIf="!isLoading && summaries.length === 0 && !errorMessage"
-         class="empty-state">
+    <!-- Empty state — no summaries at all -->
+    <div *ngIf="!isLoading && summaries.length === 0 && !errorMessage" class="empty-state">
       <div class="empty-icon">📄</div>
       <h3>No summaries yet</h3>
       <p>Go to the dashboard and create your first summary!</p>
-      <button class="go-btn" mat-raised-button (click)="goToDashboard()">
-        Go to Dashboard →
-      </button>
+      <button class="go-btn" mat-raised-button (click)="goToDashboard()">Go to Dashboard →</button>
+    </div>
+
+    <!-- Empty state — filters returned nothing -->
+    <div *ngIf="!isLoading && summaries.length > 0 && filteredSummaries.length === 0" class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h3>No results found</h3>
+      <p>Try a different search term or clear the filters.</p>
+      <button class="go-btn" mat-raised-button (click)="resetFilters()">Clear Filters</button>
     </div>
 
     <!-- Cards -->
     <div class="cards-grid">
-      <div *ngFor="let summary of summaries; let i = index"
+      <div *ngFor="let summary of filteredSummaries; let i = index"
            class="summary-card glass-card"
            [style.animation-delay]="(i * 0.06) + 's'">
 
@@ -58,11 +111,50 @@
           </span>
         </div>
 
+        <!-- Tags row -->
+        <div class="tags-row">
+          <!-- Existing tags -->
+          <span class="tag-pill"
+                *ngFor="let tag of getTagsFor(summary.id)"
+                (click)="filterTag = tag"
+                title="Click to filter by this tag">
+            🏷 {{ tag }}
+            <button class="tag-remove" (click)="$event.stopPropagation(); removeTag(summary.id, tag)">✕</button>
+          </span>
+
+          <!-- Add tag button -->
+          <button class="add-tag-btn"
+                  *ngIf="editingTagId !== summary.id"
+                  (click)="startTagEdit(summary.id)">
+            + Add tag
+          </button>
+
+          <!-- Tag input (inline) -->
+          <div class="tag-input-wrap" *ngIf="editingTagId === summary.id">
+            <input class="tag-input"
+                   type="text"
+                   [(ngModel)]="newTagInput"
+                   placeholder="e.g. Physics"
+                   (keydown.enter)="addTagFromInput(summary.id)"
+                   (keydown.escape)="cancelTagEdit()"
+                   autofocus>
+            <button class="tag-confirm" (click)="addTagFromInput(summary.id)">✓</button>
+            <button class="tag-cancel"  (click)="cancelTagEdit()">✕</button>
+            <!-- Quick suggestions -->
+            <div class="tag-suggestions">
+              <button class="tag-suggestion-pill"
+                      *ngFor="let s of tagSuggestions"
+                      (click)="addTag(summary.id, s)">
+                {{ s }}
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="summary-text">{{ summary.summaryText }}</p>
 
         <div class="card-footer">
-          <button class="delete-btn" mat-button
-                  (click)="deleteSummary(summary.id)">
+          <button class="delete-btn" mat-button (click)="deleteSummary(summary.id)">
             🗑 Delete
           </button>
         </div>

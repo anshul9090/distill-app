@@ -2,7 +2,6 @@
 <div class="dashboard-container">
   <mat-toolbar color="primary" class="dashboard-toolbar">
 
-    <!-- Flask icon with bubbles -->
     <div class="toolbar-flask-wrap" (click)="shakeFlask()">
       <svg class="toolbar-flask-svg" viewBox="0 0 70 92" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -14,24 +13,15 @@
             <path d="M24 36 L13 62 Q8 92 35 92 Q62 92 57 62 L46 36 Z"/>
           </clipPath>
         </defs>
-        <rect x="23" y="1" width="24" height="8" rx="3"
-              fill="rgba(249,115,22,0.3)"
-              stroke="rgba(249,115,22,0.55)" stroke-width="1.5"/>
-        <rect x="25" y="7" width="20" height="31" rx="3"
-              fill="rgba(255,255,255,0.04)"
-              stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
-        <path d="M24 36 L13 62 Q8 92 35 92 Q62 92 57 62 L46 36 Z"
-              fill="rgba(255,255,255,0.04)"
-              stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
-        <rect x="8" y="66" width="54" height="30"
-              fill="url(#liqGrad2)" clip-path="url(#flaskClip2)"/>
-        <ellipse cx="35" cy="66" rx="19" ry="3.5"
-                 fill="rgba(255,255,255,0.18)" clip-path="url(#flaskClip2)"/>
+        <rect x="23" y="1" width="24" height="8" rx="3" fill="rgba(249,115,22,0.3)" stroke="rgba(249,115,22,0.55)" stroke-width="1.5"/>
+        <rect x="25" y="7" width="20" height="31" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
+        <path d="M24 36 L13 62 Q8 92 35 92 Q62 92 57 62 L46 36 Z" fill="rgba(255,255,255,0.04)" stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
+        <rect x="8" y="66" width="54" height="30" fill="url(#liqGrad2)" clip-path="url(#flaskClip2)"/>
+        <ellipse cx="35" cy="66" rx="19" ry="3.5" fill="rgba(255,255,255,0.18)" clip-path="url(#flaskClip2)"/>
         <circle cx="24" cy="74" r="2.5" fill="rgba(249,115,22,0.55)"/>
         <circle cx="42" cy="80" r="2"   fill="rgba(236,72,153,0.55)"/>
         <circle cx="33" cy="70" r="1.8" fill="rgba(251,191,36,0.55)"/>
-        <rect x="29" y="10" width="5" height="22" rx="2"
-              fill="rgba(255,255,255,0.09)"/>
+        <rect x="29" y="10" width="5" height="22" rx="2" fill="rgba(255,255,255,0.09)"/>
       </svg>
       <div class="toolbar-bubble tb1"></div>
       <div class="toolbar-bubble tb2"></div>
@@ -41,9 +31,7 @@
     <span class="neon-text toolbar-title">DISTILL</span>
     <span class="spacer"></span>
 
-    <button mat-button [matMenuTriggerFor]="themeMenu">
-      🎨 Theme
-    </button>
+    <button mat-button [matMenuTriggerFor]="themeMenu">🎨 Theme</button>
     <mat-menu #themeMenu="matMenu">
       <button mat-menu-item
               *ngFor="let theme of themeService.themes"
@@ -54,9 +42,7 @@
 
     <button mat-button (click)="goToHistory()">📋 History</button>
     <button mat-button (click)="onLogout()">Logout</button>
-    <button mat-button *ngIf="isAdmin()" (click)="goToAdmin()">
-      👑 Admin
-    </button>
+    <button mat-button *ngIf="isAdmin()" (click)="goToAdmin()">👑 Admin</button>
   </mat-toolbar>
 
   <div class="content-area">
@@ -67,157 +53,161 @@
 
       <mat-card-content>
         <div class="tab-buttons">
-          <button mat-stroked-button
-                  [color]="activeTab === 'text' ? 'primary' : ''"
-                  (click)="activeTab = 'text'">
-            📝 Text
-          </button>
-          <button mat-stroked-button
-                  [color]="activeTab === 'url' ? 'primary' : ''"
-                  (click)="activeTab = 'url'">
-            🔗 URL
-          </button>
-          <button mat-stroked-button
-                  [color]="activeTab === 'pdf' ? 'primary' : ''"
-                  (click)="activeTab = 'pdf'">
-            📄 PDF
-          </button>
-          <button mat-stroked-button
-                  [color]="activeTab === 'image' ? 'primary' : ''"
-                  (click)="activeTab = 'image'">
-            🖼️ Image
-          </button>
+          <button mat-stroked-button [color]="activeTab === 'text'  ? 'primary' : ''" (click)="activeTab = 'text'">📝 Text</button>
+          <button mat-stroked-button [color]="activeTab === 'url'   ? 'primary' : ''" (click)="activeTab = 'url'">🔗 URL</button>
+          <button mat-stroked-button [color]="activeTab === 'pdf'   ? 'primary' : ''" (click)="activeTab = 'pdf'">📄 PDF</button>
+          <button mat-stroked-button [color]="activeTab === 'image' ? 'primary' : ''" (click)="activeTab = 'image'">🖼️ Image</button>
         </div>
 
         <div *ngIf="activeTab === 'text'">
           <mat-form-field appearance="outline" style="width:100%">
             <mat-label>Enter text to summarize</mat-label>
-            <textarea matInput [(ngModel)]="content"
-                      (keydown.enter)="onSummarize()"
-                      rows="8"
-                      placeholder="Paste your text here...">
-            </textarea>
+            <textarea matInput [(ngModel)]="content" (keydown.enter)="onSummarize()" rows="8" placeholder="Paste your text here..."></textarea>
           </mat-form-field>
         </div>
 
         <div *ngIf="activeTab === 'url'">
           <mat-form-field appearance="outline" style="width:100%">
             <mat-label>Enter URL</mat-label>
-            <input matInput [(ngModel)]="url"
-                   (keydown.enter)="onSummarize()"
-                   placeholder="https://example.com/article">
+            <input matInput [(ngModel)]="url" (keydown.enter)="onSummarize()" placeholder="https://example.com/article">
           </mat-form-field>
         </div>
 
-        <div *ngIf="activeTab === 'pdf'" class="pdf-upload"
-             (dblclick)="fileInput.click()">
-          <button mat-stroked-button (click)="fileInput.click()">
-            📁 Choose PDF File
-          </button>
-          <input #fileInput type="file" accept=".pdf"
-                 (change)="onFileSelected($event)"
-                 style="display:none">
-          <p *ngIf="fileName" style="margin-top:8px;color:green">
-            ✓ {{fileName}}
-          </p>
-          <p style="color:#666;font-size:12px;margin-top:8px">
-            Double click anywhere here to choose file
-          </p>
+        <div *ngIf="activeTab === 'pdf'" class="pdf-upload" (dblclick)="fileInput.click()">
+          <button mat-stroked-button (click)="fileInput.click()">📁 Choose PDF File</button>
+          <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" style="display:none">
+          <p *ngIf="fileName" style="margin-top:8px;color:green">✓ {{fileName}}</p>
+          <p style="color:#666;font-size:12px;margin-top:8px">Double click anywhere here to choose file</p>
         </div>
 
-        <div *ngIf="activeTab === 'image'" class="pdf-upload"
-             (dblclick)="imageInput.click()">
-          <button mat-stroked-button (click)="imageInput.click()">
-            🖼️ Choose Image File
-          </button>
-          <input #imageInput type="file"
-                 accept=".jpg,.jpeg,.png,.bmp,.tiff,.webp"
-                 (change)="onImageSelected($event)"
-                 style="display:none">
-          <p *ngIf="imageFileName" style="margin-top:8px;color:green">
-            ✓ {{imageFileName}}
-          </p>
-          <p style="color:#666;font-size:12px;margin-top:8px">
-            Double click anywhere here to choose file
-          </p>
+        <div *ngIf="activeTab === 'image'" class="pdf-upload" (dblclick)="imageInput.click()">
+          <button mat-stroked-button (click)="imageInput.click()">🖼️ Choose Image File</button>
+          <input #imageInput type="file" accept=".jpg,.jpeg,.png,.bmp,.tiff,.webp" (change)="onImageSelected($event)" style="display:none">
+          <p *ngIf="imageFileName" style="margin-top:8px;color:green">✓ {{imageFileName}}</p>
+          <p style="color:#666;font-size:12px;margin-top:8px">Double click anywhere here to choose file</p>
         </div>
 
         <div class="options-row">
           <mat-form-field appearance="outline" class="option-field">
             <mat-label>Language</mat-label>
             <mat-select [(ngModel)]="language">
-              <mat-option *ngFor="let lang of languages" [value]="lang">
-                {{lang}}
-              </mat-option>
+              <mat-option *ngFor="let lang of languages" [value]="lang">{{lang}}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="option-field">
             <mat-label>Summary Length</mat-label>
             <mat-select [(ngModel)]="length">
-              <mat-option *ngFor="let len of lengths" [value]="len">
-                {{len}}
-              </mat-option>
+              <mat-option *ngFor="let len of lengths" [value]="len">{{len}}</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="option-field">
             <mat-label>Output Format</mat-label>
             <mat-select [(ngModel)]="format">
-              <mat-option *ngFor="let f of formats" [value]="f">
-                {{f === 'Bullets' ? '• Bullet Points' : '¶ Paragraph'}}
-              </mat-option>
+              <mat-option value="Paragraph">¶ Paragraph</mat-option>
+              <mat-option value="Bullets">• Bullet Points</mat-option>
+              <mat-option value="Flashcards">🃏 Flashcards</mat-option>
+              <mat-option value="Questions">❓ Questions</mat-option>
             </mat-select>
           </mat-form-field>
+        </div>
+
+        <!-- Format hint -->
+        <div class="format-hint" *ngIf="format === 'Flashcards'">
+          🃏 Generates flippable study cards — click any card to reveal the definition
+        </div>
+        <div class="format-hint" *ngIf="format === 'Questions'">
+          ❓ Generates exam-style questions — click to reveal each answer
         </div>
 
         <p style="color:red" *ngIf="errorMessage">{{errorMessage}}</p>
       </mat-card-content>
 
       <mat-card-actions>
-        <!-- Burst wrapper -->
         <div class="summarize-btn-wrap">
           <canvas #burstCanvas class="burst-canvas"></canvas>
           <button mat-raised-button color="primary"
                   style="width:100%"
                   (click)="onSummarizeWithBurst()"
                   [disabled]="isLoading">
-            {{ isLoading ? 'Summarizing...' : '⚡ Summarize' }}
+            {{ isLoading ? 'Generating...' : '⚡ ' + (format === 'Flashcards' ? 'Generate Flashcards' : format === 'Questions' ? 'Generate Questions' : 'Summarize') }}
           </button>
         </div>
       </mat-card-actions>
     </mat-card>
 
+    <!-- ── PARAGRAPH / BULLETS RESULT ─────────────────────── -->
     <mat-card class="result-card" *ngIf="summaryResult">
       <mat-card-header>
         <mat-card-title>Summary Result</mat-card-title>
-        <mat-card-subtitle>
-          {{language}} — {{length}} — {{format}}
-        </mat-card-subtitle>
+        <mat-card-subtitle>{{language}} — {{length}} — {{format}}</mat-card-subtitle>
       </mat-card-header>
-
       <mat-card-content>
         <p class="summary-text">{{summaryResult}}</p>
       </mat-card-content>
-
       <mat-card-actions class="result-actions">
-        <button mat-stroked-button
-                (click)="copyToClipboard()"
-                [color]="isCopied ? 'accent' : 'primary'">
+        <button mat-stroked-button (click)="copyToClipboard()" [color]="isCopied ? 'accent' : 'primary'">
           {{ isCopied ? '✅ Copied!' : '📋 Copy' }}
         </button>
-
-        <button mat-raised-button color="accent"
-                (click)="downloadPDF()"
-                [disabled]="!summaryResult">
+        <button mat-raised-button color="accent" (click)="downloadPDF()" [disabled]="!summaryResult">
           📄 Download PDF
         </button>
       </mat-card-actions>
     </mat-card>
 
+    <!-- ── FLASHCARDS RESULT ───────────────────────────────── -->
+    <div class="flashcards-section" *ngIf="flashcards.length > 0">
+      <div class="section-header">
+        <h2>🃏 Flashcards <span class="count-badge">{{flashcards.length}}</span></h2>
+        <p class="section-hint">Click any card to flip it</p>
+      </div>
+      <div class="flashcards-grid">
+        <div class="flashcard-wrap" *ngFor="let card of flashcards; let i = index">
+          <div class="flashcard" [class.flipped]="card.flipped" (click)="flipCard(card)">
+            <div class="flashcard-front">
+              <div class="card-label">TERM</div>
+              <div class="card-content">{{card.term}}</div>
+              <div class="card-tap-hint">tap to flip →</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="card-label">DEFINITION</div>
+              <div class="card-content">{{card.definition}}</div>
+              <div class="card-tap-hint">← tap to flip back</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── QUESTIONS RESULT ────────────────────────────────── -->
+    <div class="questions-section" *ngIf="questions.length > 0">
+      <div class="section-header">
+        <h2>❓ Questions <span class="count-badge">{{questions.length}}</span></h2>
+        <p class="section-hint">Click "Reveal Answer" to check yourself</p>
+      </div>
+      <div class="questions-list">
+        <div class="question-item" *ngFor="let q of questions; let i = index">
+          <div class="question-number">Q{{i + 1}}</div>
+          <div class="question-body">
+            <p class="question-text">{{q.question}}</p>
+            <div class="answer-wrap" [class.revealed]="q.revealed">
+              <button class="reveal-btn" (click)="toggleAnswer(q)">
+                {{ q.revealed ? '🔼 Hide Answer' : '🔽 Reveal Answer' }}
+              </button>
+              <div class="answer-box" *ngIf="q.revealed">
+                <span class="answer-label">Answer:</span>
+                <p class="answer-text">{{q.answer}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="loading-container" *ngIf="isLoading">
       <mat-spinner></mat-spinner>
-      <p>Generating summary...</p>
+      <p>{{ format === 'Flashcards' ? 'Creating flashcards...' : format === 'Questions' ? 'Generating questions...' : 'Generating summary...' }}</p>
     </div>
   </div>
 </div>
