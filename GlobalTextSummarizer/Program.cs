@@ -161,13 +161,14 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// ── SEEDER ────────────────────────────────────────────────
+// ── MIGRATIONS + SEEDER ────────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
+    var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
+    await db.Database.MigrateAsync(); // ← creates all tables first
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
     await seeder.SeedAsync();
 }
-
 // ── MIDDLEWARE PIPELINE ───────────────────────────────────
 if (app.Environment.IsDevelopment())
 {
