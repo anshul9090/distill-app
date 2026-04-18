@@ -17,8 +17,11 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── DATABASE ─────────────────────────────────────────────
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Host=ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech;Port=5432;Database=neondb;Username=neondb_owner;Password=npg_JGHd7q9ZDFMz;SSL Mode=Require;Trust Server Certificate=true";
+
 builder.Services.AddDbContext<SummarizerDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 // ── SERVICES ──────────────────────────────────────────────
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -33,7 +36,6 @@ builder.Services.AddScoped<ImageExtractorService>();
 builder.Services.AddScoped<PdfGeneratorService>();
 
 // ── RATE LIMITING ─────────────────────────────────────────
-// Install: dotnet add package AspNetCoreRateLimit
 builder.Services.AddMemoryCache();
 builder.Services.Configure<IpRateLimitOptions>(options =>
 {
@@ -41,45 +43,12 @@ builder.Services.Configure<IpRateLimitOptions>(options =>
     options.StackBlockedRequests = false;
     options.GeneralRules = new List<RateLimitRule>
     {
-        // Max 10 summarize calls per minute per IP
-        new RateLimitRule
-        {
-            Endpoint = "POST:/api/summary/summarize",
-            Limit = 10,
-            Period = "1m"
-        },
-        new RateLimitRule
-        {
-            Endpoint = "POST:/api/summary/summarize-pdf",
-            Limit = 10,
-            Period = "1m"
-        },
-        new RateLimitRule
-        {
-            Endpoint = "POST:/api/summary/summarize-url",
-            Limit = 10,
-            Period = "1m"
-        },
-        new RateLimitRule
-        {
-            Endpoint = "POST:/api/summary/summarize-image",
-            Limit = 10,
-            Period = "1m"
-        },
-        // Max 5 login attempts per minute per IP
-        new RateLimitRule
-        {
-            Endpoint = "POST:/api/auth/login",
-            Limit = 5,
-            Period = "1m"
-        },
-        // Max 3 OTP sends per 5 minutes per IP
-        new RateLimitRule
-        {
-            Endpoint = "POST:/api/otp/send",
-            Limit = 3,
-            Period = "5m"
-        }
+        new RateLimitRule { Endpoint = "POST:/api/summary/summarize", Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-pdf", Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-url", Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-image", Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/auth/login", Limit = 5, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/otp/send", Limit = 3, Period = "5m" }
     };
 });
 builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
@@ -120,7 +89,7 @@ builder.Services.AddEndpointsApiExplorer();
 // ── CORS ──────────────────────────────────────────────────
 var allowedOrigins = builder.Environment.IsDevelopment()
     ? new[] { "http://localhost:4200" }
-    : new[] { "https://distill-backend.vercel.app" }; // ← replace before deploying
+    : new[] { "https://distill-backend.vercel.app" };
 
 builder.Services.AddCors(options =>
 {
@@ -152,7 +121,7 @@ builder.Services.AddSwaggerGen(options =>
             Reference = new OpenApiReference
             {
                 Type = ReferenceType.SecurityScheme,
-                Id   = "Bearer"
+                Id = "Bearer"
             }
         },
         new string[] {}
@@ -161,14 +130,15 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// ── MIGRATIONS + SEEDER ────────────────────────────────────────────────
+// ── MIGRATIONS + SEEDER ───────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
-    await db.Database.MigrateAsync(); // ← creates all tables first
+    await db.Database.MigrateAsync();
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
     await seeder.SeedAsync();
 }
+
 // ── MIDDLEWARE PIPELINE ───────────────────────────────────
 if (app.Environment.IsDevelopment())
 {
@@ -178,13 +148,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// HSTS for production
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
 }
 
-app.UseIpRateLimiting(); // ← must be before UseCors
+app.UseIpRateLimiting();
 app.UseCors("AllowAngular");
 app.UseAuthentication();
 app.UseAuthorization();
