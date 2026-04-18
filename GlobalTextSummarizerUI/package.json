@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "scripts": {
+    "build": "ng build --configuration production",},
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:GlobalTextSummarizerUI": "node dist/GlobalTextSummarizerUI/server/server.mjs"

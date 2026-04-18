@@ -1,16 +1,15 @@
 {
-  "buildCommand": "npx ng build --configuration production",
-  "outputDirectory": "dist/GlobalTextSummarizerUI",
-  "framework": "angular",
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/GlobalTextSummarizerUI"
+      }
+    }
+  ],
   "routes": [
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*\\.(js|css|ico|png|jpg|svg|woff|woff2|ttf|eot))",
-      "dest": "/$1"
-    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
