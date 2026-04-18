@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run build -- --configuration production",
+  "outputDirectory": "dist/global-text-summarizer-ui/browser",
+  "framework": "angular"
+}
