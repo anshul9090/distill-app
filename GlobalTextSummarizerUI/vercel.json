@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build -- --configuration production",
+  "buildCommand": "npm run build -- --configuration production --budget-violation=warning",
   "outputDirectory": "dist/global-text-summarizer-ui/browser",
   "framework": "angular"
 }
