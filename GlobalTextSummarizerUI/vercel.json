@@ -1,5 +1,5 @@
 {
   "buildCommand": "npx ng build --configuration production",
-  "outputDirectory": "dist/global-text-summarizer-ui/browser",
+  "outputDirectory": "dist/GlobalTextSummarizerUI",
   "framework": "angular"
 }
