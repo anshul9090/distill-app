@@ -15,10 +15,10 @@ namespace Summarizer.Infrastructure.Email
 
         public async Task SendOtpEmailAsync(string toEmail, string otpCode)
         {
-            var fromEmail = "bhapkaanshul@gmail.com";
-            var smtpHost = "smtp.gmail.com";
-            var smtpPort = 587;
-            var appPassword = "jdhardgtlcavebun";
+            var fromEmail = _configuration["EmailSettings__FromEmail"]!;
+            var smtpHost = _configuration["EmailSettings__SmtpHost"]!;
+            var smtpPort = int.Parse(_configuration["EmailSettings__SmtpPort"] ?? "587");
+            var appPassword = _configuration["EmailSettings__AppPassword"]!;
 
             var smtpClient = new SmtpClient(smtpHost)
             {
