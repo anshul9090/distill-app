@@ -19,7 +19,6 @@ namespace Summarizer.Infrastructure.Services
         private readonly IConfiguration _configuration;
         private readonly OtpService _otpService;
 
-        // ✅ SINGLE CONSTRUCTOR (FIXED)
         public AuthService(
             SummarizerDbContext dbContext,
             IPasswordHasher<User> passwordHasher,
@@ -32,7 +31,6 @@ namespace Summarizer.Infrastructure.Services
             _otpService = otpService;
         }
 
-        // 🔥 JWT TOKEN GENERATION
         private string GenerateJwtToken(User user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
@@ -46,7 +44,7 @@ namespace Summarizer.Infrastructure.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, user.Role!.RoleName) // ✅ FIXED (no fallback)
+                new Claim(ClaimTypes.Role, user.Role!.RoleName)
             };
 
             var token = new JwtSecurityToken(
@@ -83,7 +81,8 @@ namespace Summarizer.Infrastructure.Services
                 Email = request.Email!,
                 CreatedAt = DateTime.UtcNow,
                 IsDeleted = false,
-                RoleId = 2 // User
+                IsVerified = true, // ← auto-verify for demo
+                RoleId = 2
             };
 
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password!);
@@ -91,12 +90,11 @@ namespace Summarizer.Infrastructure.Services
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
 
-            // 🔥 Load Role BEFORE token
             await _dbContext.Entry(user)
                 .Reference(u => u.Role)
                 .LoadAsync();
 
-            await _otpService.SendOtpAsync(request.Email!);
+            // await _otpService.SendOtpAsync(request.Email!); ← disabled for demo
 
             var token = GenerateJwtToken(user);
 
@@ -108,7 +106,7 @@ namespace Summarizer.Infrastructure.Services
             };
         }
 
-        // 🔐 LOGIN — add IsDeleted check after user null check
+        // 🔐 LOGIN
         public async Task<AuthResponse> Login(LoginRequest request)
         {
             var user = await _dbContext.Users
@@ -117,7 +115,6 @@ namespace Summarizer.Infrastructure.Services
             if (user == null)
                 throw new Exception("User not found");
 
-            // ← ADD THIS — block soft-deleted users
             if (user.IsDeleted)
                 throw new Exception("Account has been deactivated. Contact support.");
 
@@ -153,7 +150,7 @@ namespace Summarizer.Infrastructure.Services
             };
         }
 
-        // 🔐 LOGOUT — revoke refresh token server-side
+        // 🔐 LOGOUT
         public async Task LogoutAsync(string refreshToken)
         {
             var token = await _dbContext.RefreshTokens
@@ -165,7 +162,6 @@ namespace Summarizer.Infrastructure.Services
                 await _dbContext.SaveChangesAsync();
             }
         }
-    
 
         // 🔄 REFRESH TOKEN
         public async Task<AuthResponse> RefreshToken(RefreshTokenRequest request)
