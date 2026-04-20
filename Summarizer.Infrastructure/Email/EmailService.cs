@@ -15,10 +15,11 @@ namespace Summarizer.Infrastructure.Email
 
         public async Task SendOtpEmailAsync(string toEmail, string otpCode)
         {
-            var fromEmail = _configuration["EmailSettings__FromEmail"]!;
-            var smtpHost = _configuration["EmailSettings__SmtpHost"]!;
-            var smtpPort = int.Parse(_configuration["EmailSettings__SmtpPort"] ?? "587");
-            var appPassword = _configuration["EmailSettings__AppPassword"]!;
+            var fromEmail = _configuration["EmailSettings:FromEmail"];
+            var smtpHost = _configuration["EmailSettings:SmtpHost"];
+            var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
+            var appPassword = _configuration["EmailSettings:AppPassword"];
+            Console.WriteLine($"SMTP DEBUG - Host:{smtpHost} Port:{smtpPort} From:{fromEmail}");
 
             var smtpClient = new SmtpClient(smtpHost)
             {
@@ -42,8 +43,6 @@ namespace Summarizer.Infrastructure.Email
             };
 
             mailMessage.To.Add(toEmail);
-            Console.WriteLine($"SMTP DEBUG - Host:{smtpHost} Port:{smtpPort} From:{fromEmail} PassLen:{appPassword?.Length}");
-            await smtpClient.SendMailAsync(mailMessage);
             await smtpClient.SendMailAsync(mailMessage);
         }
     }
