@@ -18,7 +18,8 @@ namespace Summarizer.Infrastructure.Email
 
         public async Task SendOtpEmailAsync(string toEmail, string otpCode)
         {
-            var apiKey = _configuration["EmailSettings__AppPassword"];
+            var apiKey = _configuration["RESEND_API_KEY"]
+    ?? _configuration["EmailSettings__AppPassword"];
 
             var payload = new
             {
