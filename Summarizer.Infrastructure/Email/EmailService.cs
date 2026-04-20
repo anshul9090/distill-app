@@ -1,49 +1,52 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System.Net;
-using System.Net.Mail;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 
 namespace Summarizer.Infrastructure.Email
 {
     public class EmailService
     {
         private readonly IConfiguration _configuration;
+        private readonly HttpClient _httpClient;
 
         public EmailService(IConfiguration configuration)
         {
             _configuration = configuration;
+            _httpClient = new HttpClient();
         }
 
         public async Task SendOtpEmailAsync(string toEmail, string otpCode)
         {
-            var fromEmail = _configuration["EmailSettings:FromEmail"];
-            var smtpHost = _configuration["EmailSettings:SmtpHost"];
-            var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
-            var appPassword = _configuration["EmailSettings:AppPassword"];
-            Console.WriteLine($"SMTP DEBUG - Host:{smtpHost} Port:{smtpPort} From:{fromEmail}");
+            var apiKey = _configuration["EmailSettings__AppPassword"];
 
-            var smtpClient = new SmtpClient(smtpHost)
+            var payload = new
             {
-                Port = smtpPort,
-                Credentials = new NetworkCredential(fromEmail, appPassword),
-                EnableSsl = true
-            };
-
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(fromEmail),
-                Subject = "Your OTP - Global Text Summarizer",
-                Body = $@"<html><body>
+                from = "onboarding@resend.dev",
+                to = toEmail,
+                subject = "Your OTP - DISTILL",
+                html = $@"<html><body>
                     <h2>Email Verification</h2>
                     <p>Your OTP code is:</p>
                     <h1 style='color:#667eea;letter-spacing:8px'>{otpCode}</h1>
                     <p>This code expires in <b>10 minutes</b>.</p>
-                    <p>If you didn't request this, ignore this email.</p>
-                    </body></html>",
-                IsBodyHtml = true
+                    </body></html>"
             };
 
-            mailMessage.To.Add(toEmail);
-            await smtpClient.SendMailAsync(mailMessage);
+            var json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+
+            var response = await _httpClient.PostAsync("https://api.resend.com/emails", content);
+            var body = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"Resend response: {response.StatusCode} - {body}");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Email failed: {body}");
         }
     }
 }
