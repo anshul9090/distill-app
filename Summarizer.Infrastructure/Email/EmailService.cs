@@ -42,6 +42,8 @@ namespace Summarizer.Infrastructure.Email
             };
 
             mailMessage.To.Add(toEmail);
+            Console.WriteLine($"SMTP DEBUG - Host:{smtpHost} Port:{smtpPort} From:{fromEmail} PassLen:{appPassword?.Length}");
+            await smtpClient.SendMailAsync(mailMessage);
             await smtpClient.SendMailAsync(mailMessage);
         }
     }
