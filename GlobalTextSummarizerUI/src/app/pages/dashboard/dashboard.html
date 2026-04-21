@@ -39,12 +39,29 @@
     <span class="spacer"></span>
 
     <button mat-button [matMenuTriggerFor]="themeMenu">🎨 Theme</button>
-    <mat-menu #themeMenu="matMenu">
-      <button mat-menu-item *ngFor="let theme of themeService.themes"
-              (click)="themeService.applyTheme(theme.name)">
-        {{theme.icon}} {{theme.label}}
-      </button>
-    </mat-menu>
+<mat-menu #themeMenu="matMenu" class="theme-menu">
+
+  <div class="theme-group-label">🌙 Dark</div>
+  <button mat-menu-item
+          *ngFor="let theme of themeService.darkThemes"
+          (click)="themeService.applyTheme(theme.name)"
+          [class.active-theme]="themeService.currentThemeName === theme.name">
+    <span class="theme-dot theme-dot--{{theme.name}}"></span>
+    {{ theme.icon }} {{ theme.label }}
+    <span class="theme-check" *ngIf="themeService.currentThemeName === theme.name">✓</span>
+  </button>
+
+  <div class="theme-group-label theme-group-label--light">☀️ Light</div>
+  <button mat-menu-item
+          *ngFor="let theme of themeService.lightThemes"
+          (click)="themeService.applyTheme(theme.name)"
+          [class.active-theme]="themeService.currentThemeName === theme.name">
+    <span class="theme-dot theme-dot--{{theme.name}}"></span>
+    {{ theme.icon }} {{ theme.label }}
+    <span class="theme-check" *ngIf="themeService.currentThemeName === theme.name">✓</span>
+  </button>
+
+</mat-menu>
 
     <button mat-button (click)="goToHistory()">📋 History</button>
     <button mat-button (click)="onLogout()">Logout</button>

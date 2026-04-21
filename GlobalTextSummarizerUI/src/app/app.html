@@ -1,1 +1,6 @@
+<!-- ── GLOBAL PROGRESS BAR ─────────────────────────────── -->
+<div class="global-progress-wrap" [class.visible]="loadingService.isLoading()">
+  <mat-progress-bar mode="indeterminate" class="neon-progress"></mat-progress-bar>
+</div>
+
 <router-outlet />

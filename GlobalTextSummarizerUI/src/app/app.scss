@@ -1,0 +1,38 @@
+.global-progress-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+.neon-progress {
+  height: 3px !important;
+
+  .mdc-linear-progress__bar-inner {
+    border-color: var(--neon-primary) !important;
+  }
+
+  .mdc-linear-progress__buffer-bar {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--neon-primary);
+    filter: blur(4px);
+    opacity: 0.6;
+  }
+}
