@@ -6,6 +6,7 @@ import { authGuard } from './guards/auth-guard';
 import { VerifyOtp } from './pages/verify-otp/verify-otp';
 import { adminGuard } from './guards/admin-guard';
 import { LandingComponent } from './pages/landing/landing';
+import { NotFound } from './pages/not-found/not-found';
 
 export const routes: Routes = [
   { path: '',           component: LandingComponent },          // Landing IS the login now
@@ -28,5 +29,5 @@ export const routes: Routes = [
       import('./pages/admin/admin').then(m => m.Admin),
     canActivate: [authGuard, adminGuard]
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', component: NotFound }   
 ];

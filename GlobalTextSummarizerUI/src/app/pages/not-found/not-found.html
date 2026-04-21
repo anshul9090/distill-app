@@ -1,0 +1,55 @@
+<app-particle-background></app-particle-background>
+
+<div class="notfound-container">
+  <div class="notfound-card">
+
+    <!-- Animated Flask -->
+    <div class="flask-wrap">
+      <svg class="flask-svg" viewBox="0 0 70 92" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="liqGrad404" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.75"/>
+            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0.75"/>
+          </linearGradient>
+          <clipPath id="flaskClip404">
+            <path d="M24 36 L13 62 Q8 92 35 92 Q62 92 57 62 L46 36 Z"/>
+          </clipPath>
+        </defs>
+        <rect x="23" y="1"  width="24" height="8"  rx="3" fill="rgba(249,115,22,0.3)"  stroke="rgba(249,115,22,0.55)" stroke-width="1.5"/>
+        <rect x="25" y="7"  width="20" height="31" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
+        <path d="M24 36 L13 62 Q8 92 35 92 Q62 92 57 62 L46 36 Z"
+              fill="rgba(255,255,255,0.04)" stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
+        <rect x="8" y="66" width="54" height="30"
+              fill="url(#liqGrad404)" clip-path="url(#flaskClip404)"/>
+        <ellipse cx="35" cy="66" rx="19" ry="3.5"
+                 fill="rgba(255,255,255,0.18)" clip-path="url(#flaskClip404)"/>
+        <circle cx="24" cy="74" r="2.5" fill="rgba(249,115,22,0.55)"/>
+        <circle cx="42" cy="80" r="2"   fill="rgba(236,72,153,0.55)"/>
+        <circle cx="33" cy="70" r="1.8" fill="rgba(251,191,36,0.55)"/>
+        <rect x="29" y="10" width="5" height="22" rx="2" fill="rgba(255,255,255,0.09)"/>
+      </svg>
+      <div class="bubble b1"></div>
+      <div class="bubble b2"></div>
+      <div class="bubble b3"></div>
+    </div>
+
+    <!-- 404 Text -->
+    <div class="error-code">404</div>
+    <h1 class="error-title">Page Not Found</h1>
+    <p class="error-desc">
+      Looks like this page got distilled out of existence.<br>
+      The URL you're looking for doesn't exist.
+    </p>
+
+    <!-- Actions -->
+    <div class="action-row">
+      <button class="btn-primary" (click)="goHome()">
+        🏠 Go to Login
+      </button>
+      <button class="btn-secondary" (click)="goDashboard()">
+        ⚡ Go to Dashboard
+      </button>
+    </div>
+
+  </div>
+</div>
