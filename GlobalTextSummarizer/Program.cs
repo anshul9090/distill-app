@@ -93,7 +93,7 @@ builder.Services.AddEndpointsApiExplorer();
 // ── CORS ──────────────────────────────────────────────────
 var allowedOrigins = builder.Environment.IsDevelopment()
     ? new[] { "http://localhost:4200" }
-    : new[] { "https://distill-backend.vercel.app" };
+    : new[] { "https://distill-app-anshul9090s-projects.vercel.app" };
 
 builder.Services.AddCors(options =>
 {
