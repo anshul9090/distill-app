@@ -20,10 +20,10 @@
             <path d="M24 36 L13 62 Q8 92 35 92 Q62 92 57 62 L46 36 Z"/>
           </clipPath>
         </defs>
-        <rect x="23" y="1" width="24" height="8" rx="3" fill="rgba(249,115,22,0.3)" stroke="rgba(249,115,22,0.55)" stroke-width="1.5"/>
-        <rect x="25" y="7" width="20" height="31" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
+        <rect x="23" y="1"  width="24" height="8"  rx="3" fill="rgba(249,115,22,0.3)"  stroke="rgba(249,115,22,0.55)" stroke-width="1.5"/>
+        <rect x="25" y="7"  width="20" height="31" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
         <path d="M24 36 L13 62 Q8 92 35 92 Q62 92 57 62 L46 36 Z" fill="rgba(255,255,255,0.04)" stroke="rgba(249,115,22,0.45)" stroke-width="1.5"/>
-        <rect x="8" y="66" width="54" height="30" fill="url(#liqGrad2)" clip-path="url(#flaskClip2)"/>
+        <rect x="8"  y="66" width="54" height="30" fill="url(#liqGrad2)" clip-path="url(#flaskClip2)"/>
         <ellipse cx="35" cy="66" rx="19" ry="3.5" fill="rgba(255,255,255,0.18)" clip-path="url(#flaskClip2)"/>
         <circle cx="24" cy="74" r="2.5" fill="rgba(249,115,22,0.55)"/>
         <circle cx="42" cy="80" r="2"   fill="rgba(236,72,153,0.55)"/>
@@ -40,8 +40,7 @@
 
     <button mat-button [matMenuTriggerFor]="themeMenu">🎨 Theme</button>
     <mat-menu #themeMenu="matMenu">
-      <button mat-menu-item
-              *ngFor="let theme of themeService.themes"
+      <button mat-menu-item *ngFor="let theme of themeService.themes"
               (click)="themeService.applyTheme(theme.name)">
         {{theme.icon}} {{theme.label}}
       </button>
@@ -60,26 +59,52 @@
 
       <mat-card-content>
         <div class="tab-buttons">
-          <button mat-stroked-button [color]="activeTab === 'text'  ? 'primary' : ''" (click)="activeTab = 'text'">📝 Text</button>
-          <button mat-stroked-button [color]="activeTab === 'url'   ? 'primary' : ''" (click)="activeTab = 'url'">🔗 URL</button>
-          <button mat-stroked-button [color]="activeTab === 'pdf'   ? 'primary' : ''" (click)="activeTab = 'pdf'">📄 PDF</button>
-          <button mat-stroked-button [color]="activeTab === 'image' ? 'primary' : ''" (click)="activeTab = 'image'">🖼️ Image</button>
+          <button mat-stroked-button [color]="activeTab==='text'  ? 'primary':''" (click)="activeTab='text'">📝 Text</button>
+          <button mat-stroked-button [color]="activeTab==='url'   ? 'primary':''" (click)="activeTab='url'">🔗 URL</button>
+          <button mat-stroked-button [color]="activeTab==='pdf'   ? 'primary':''" (click)="activeTab='pdf'">📄 PDF</button>
+          <button mat-stroked-button [color]="activeTab==='image' ? 'primary':''" (click)="activeTab='image'">🖼️ Image</button>
         </div>
 
+        <!-- TEXT TAB -->
         <div *ngIf="activeTab === 'text'">
           <mat-form-field appearance="outline" style="width:100%">
             <mat-label>Enter text to summarize</mat-label>
-            <textarea matInput [(ngModel)]="content" (keydown.enter)="onSummarize()" rows="8" placeholder="Paste your text here..."></textarea>
+            <textarea matInput [(ngModel)]="content"
+                      (keydown.enter)="onSummarize()"
+                      rows="8"
+                      placeholder="Paste your text here..."></textarea>
           </mat-form-field>
+
+          <!-- ── LIVE WORD COUNTER ────────────────────────── -->
+          <div class="input-counter" *ngIf="content.length > 0">
+            <span class="counter-item">
+              <span class="counter-val">{{ inputWordCount }}</span> words
+            </span>
+            <span class="counter-sep">•</span>
+            <span class="counter-item">
+              <span class="counter-val">{{ inputCharCount }}</span> characters
+            </span>
+            <span class="counter-sep" *ngIf="inputWordCount > 50">•</span>
+            <span class="counter-item counter-ready" *ngIf="inputWordCount > 50">
+              ✓ Ready to summarize
+            </span>
+            <span class="counter-item counter-short" *ngIf="inputWordCount > 0 && inputWordCount <= 50">
+              Add more text for a better summary
+            </span>
+          </div>
         </div>
 
+        <!-- URL TAB -->
         <div *ngIf="activeTab === 'url'">
           <mat-form-field appearance="outline" style="width:100%">
             <mat-label>Enter URL</mat-label>
-            <input matInput [(ngModel)]="url" (keydown.enter)="onSummarize()" placeholder="https://example.com/article">
+            <input matInput [(ngModel)]="url"
+                   (keydown.enter)="onSummarize()"
+                   placeholder="https://example.com/article">
           </mat-form-field>
         </div>
 
+        <!-- PDF TAB -->
         <div *ngIf="activeTab === 'pdf'" class="pdf-upload" (dblclick)="fileInput.click()">
           <button mat-stroked-button (click)="fileInput.click()">📁 Choose PDF File</button>
           <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" style="display:none">
@@ -87,9 +112,11 @@
           <p style="color:#666;font-size:12px;margin-top:8px">Double click anywhere here to choose file</p>
         </div>
 
+        <!-- IMAGE TAB -->
         <div *ngIf="activeTab === 'image'" class="pdf-upload" (dblclick)="imageInput.click()">
           <button mat-stroked-button (click)="imageInput.click()">🖼️ Choose Image File</button>
-          <input #imageInput type="file" accept=".jpg,.jpeg,.png,.bmp,.tiff,.webp" (change)="onImageSelected($event)" style="display:none">
+          <input #imageInput type="file" accept=".jpg,.jpeg,.png,.bmp,.tiff,.webp"
+                 (change)="onImageSelected($event)" style="display:none">
           <p *ngIf="imageFileName" style="margin-top:8px;color:green">✓ {{imageFileName}}</p>
           <p style="color:#666;font-size:12px;margin-top:8px">Double click anywhere here to choose file</p>
         </div>
@@ -137,20 +164,22 @@
                   style="width:100%"
                   (click)="onSummarizeWithBurst()"
                   [disabled]="isLoading">
-            {{ isLoading ? 'Generating...' : '⚡ ' + (format === 'Flashcards' ? 'Generate Flashcards' : format === 'Questions' ? 'Generate Questions' : 'Summarize') }}
+            {{ isLoading ? 'Generating...' : '⚡ ' +
+              (format === 'Flashcards' ? 'Generate Flashcards' :
+               format === 'Questions'  ? 'Generate Questions'  : 'Summarize') }}
           </button>
         </div>
       </mat-card-actions>
     </mat-card>
 
-    <!-- ── PARAGRAPH / BULLETS RESULT ─────────────────────── -->
+    <!-- ── RESULT CARD ─────────────────────────────────────── -->
     <mat-card class="result-card" *ngIf="summaryResult">
       <mat-card-header>
         <mat-card-title>Summary Result</mat-card-title>
         <mat-card-subtitle>{{language}} — {{length}} — {{format}}</mat-card-subtitle>
       </mat-card-header>
 
-      <!-- ── STATS BAR ──────────────────────────────────────── -->
+      <!-- Stats bar -->
       <div class="stats-bar">
         <div class="stat-item">
           <span class="stat-icon">📊</span>
@@ -172,26 +201,41 @@
       </div>
 
       <mat-card-content>
-        <p class="summary-text">{{summaryResult}}</p>
+        <!-- ── WORD REVEAL ──────────────────────────────────── -->
+        <p class="summary-text reveal-text">
+          <span *ngFor="let word of revealedWords; let i = index"
+                class="reveal-word"
+                [style.animation-delay]="(i * 0.02) + 's'">
+            {{word}}{{ i < revealedWords.length - 1 ? ' ' : '' }}
+          </span>
+          <span class="reveal-cursor" *ngIf="isRevealing">▌</span>
+        </p>
       </mat-card-content>
+
       <mat-card-actions class="result-actions">
-        <button mat-stroked-button (click)="copyToClipboard()" [color]="isCopied ? 'accent' : 'primary'">
+        <button mat-stroked-button (click)="copyToClipboard()"
+                [color]="isCopied ? 'accent' : 'primary'">
           {{ isCopied ? '✅ Copied!' : '📋 Copy' }}
         </button>
-        <button mat-raised-button color="accent" (click)="downloadPDF()" [disabled]="!summaryResult">
+        <button mat-stroked-button (click)="shareSummary()"
+                [color]="isShared ? 'accent' : ''">
+          {{ isShared ? '✅ Shared!' : '🔗 Share' }}
+        </button>
+        <button mat-raised-button color="accent" (click)="downloadPDF()"
+                [disabled]="!summaryResult">
           📄 Download PDF
         </button>
       </mat-card-actions>
     </mat-card>
 
-    <!-- ── FLASHCARDS RESULT ───────────────────────────────── -->
+    <!-- ── FLASHCARDS ──────────────────────────────────────── -->
     <div class="flashcards-section" *ngIf="flashcards.length > 0">
       <div class="section-header">
         <h2>🃏 Flashcards <span class="count-badge">{{flashcards.length}}</span></h2>
         <p class="section-hint">Click any card to flip it</p>
       </div>
       <div class="flashcards-grid">
-        <div class="flashcard-wrap" *ngFor="let card of flashcards; let i = index">
+        <div class="flashcard-wrap" *ngFor="let card of flashcards">
           <div class="flashcard" [class.flipped]="card.flipped" (click)="flipCard(card)">
             <div class="flashcard-front">
               <div class="card-label">TERM</div>
@@ -208,7 +252,7 @@
       </div>
     </div>
 
-    <!-- ── QUESTIONS RESULT ────────────────────────────────── -->
+    <!-- ── QUESTIONS ───────────────────────────────────────── -->
     <div class="questions-section" *ngIf="questions.length > 0">
       <div class="section-header">
         <h2>❓ Questions <span class="count-badge">{{questions.length}}</span></h2>
@@ -216,7 +260,7 @@
       </div>
       <div class="questions-list">
         <div class="question-item" *ngFor="let q of questions; let i = index">
-          <div class="question-number">Q{{i + 1}}</div>
+          <div class="question-number">Q{{i+1}}</div>
           <div class="question-body">
             <p class="question-text">{{q.question}}</p>
             <div class="answer-wrap" [class.revealed]="q.revealed">
@@ -256,7 +300,8 @@
       <div class="skeleton-label">
         <span class="skeleton-dot"></span>
         <span class="skeleton-status">
-          {{ format === 'Flashcards' ? 'Creating flashcards...' : format === 'Questions' ? 'Generating questions...' : 'Generating summary...' }}
+          {{ format === 'Flashcards' ? 'Creating flashcards...' :
+             format === 'Questions'  ? 'Generating questions...' : 'Generating summary...' }}
         </span>
       </div>
     </div>

@@ -4,112 +4,84 @@ import { Observable } from 'rxjs';
 import { AuthService } from './auth';
 import { environment } from '../../environments/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class SummaryService {
 
-private baseUrl = `${environment.apiUrl}/api/summary`;
+  private baseUrl = `${environment.apiUrl}/api/summary`;
 
   constructor(
     private http: HttpClient,
     private authService: AuthService
   ) {}
 
- summarize(inputType: string, content: string, 
-          language: string, length: string, 
-          format: string): Observable<any> {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-    });
+  private authHeaders(): { headers: HttpHeaders } {
+    return {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.authService.getToken()}`
+      })
+    };
+  }
 
-    return this.http.post(`${this.baseUrl}/summarize`, {
-        inputType,
-        content,
-        language,
-        length,
-        format
-    }, { headers });
-}
-  getHistory(): Observable<any> {
-  const token = this.authService.getToken();
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${token}`
-  });
-  return this.http.get(`${this.baseUrl}/history`, { headers });
-}
-deleteSummary(id: number): Observable<any> {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-    });
-    return this.http.delete(`${this.baseUrl}/${id}`, { headers });
-}
-clearAllSummaries(): Observable<any> {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-    });
-    return this.http.delete(`${this.baseUrl}/clear-all`, { headers });
-}
-summarizeUrl(url: string, language: string, 
-             length: string, format: string): Observable<any> {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-    });
-    return this.http.post(`${this.baseUrl}/summarize-url`, {
-        inputType: 'URL',
-        content: url,
-        language,
-        length,
-        format
-    }, { headers });
-}
+  summarize(inputType: string, content: string,
+            language: string, length: string,
+            format: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/summarize`,
+      { inputType, content, language, length, format },
+      this.authHeaders()
+    );
+  }
 
-summarizePdf(file: File, language: string, 
-             length: string, format: string): Observable<any> {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-    });
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('language', language);
-    formData.append('length', length);
-    formData.append('format', format);
-    return this.http.post(`${this.baseUrl}/summarize-pdf`, 
-        formData, { headers });
-}
-
-summarizeImage(file: File, language: string, 
+  summarizeUrl(url: string, language: string,
                length: string, format: string): Observable<any> {
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-    });
+    return this.http.post(`${this.baseUrl}/summarize-url`,
+      { inputType: 'URL', content: url, language, length, format },
+      this.authHeaders()
+    );
+  }
+
+  summarizePdf(file: File, language: string,
+               length: string, format: string): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('language', language);
     formData.append('length', length);
     formData.append('format', format);
-    return this.http.post(`${this.baseUrl}/summarize-image`, 
-        formData, { headers });
-}
-generatePdf(data: any) {
-  const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+    return this.http.post(`${this.baseUrl}/summarize-pdf`,
+      formData, this.authHeaders()
+    );
+  }
 
-  return this.http.post(
-    'https://localhost:7266/api/summary/generate-pdf',
-    data,
-    {
+  summarizeImage(file: File, language: string,
+                 length: string, format: string): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('language', language);
+    formData.append('length', length);
+    formData.append('format', format);
+    return this.http.post(`${this.baseUrl}/summarize-image`,
+      formData, this.authHeaders()
+    );
+  }
+
+  getHistory(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/history`, this.authHeaders());
+  }
+
+  deleteSummary(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${id}`, this.authHeaders());
+  }
+
+  clearAllSummaries(): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/clear-all`, this.authHeaders());
+  }
+
+  // ← FIXED: was hardcoded to localhost:7266
+  generatePdf(data: any): Observable<Blob> {
+    return this.http.post(`${this.baseUrl}/generate-pdf`, data, {
       responseType: 'blob',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  );
-
-}
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+      })
+    });
+  }
 }

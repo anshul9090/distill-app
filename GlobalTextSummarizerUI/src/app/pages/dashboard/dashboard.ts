@@ -34,20 +34,11 @@ export interface QuestionItem {
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-    MatSelectModule,
-    MatProgressSpinnerModule,
-    MatToolbarModule,
-    MatTabsModule,
-    MatIconModule,
-    MatSnackBarModule,
-    ParticleBackground,
-    MatMenuModule,
+    CommonModule, FormsModule,
+    MatFormFieldModule, MatInputModule, MatButtonModule,
+    MatCardModule, MatSelectModule, MatProgressSpinnerModule,
+    MatToolbarModule, MatTabsModule, MatIconModule,
+    MatSnackBarModule, ParticleBackground, MatMenuModule,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
@@ -55,28 +46,34 @@ export interface QuestionItem {
 export class Dashboard implements OnInit, OnDestroy {
   @ViewChild('burstCanvas') burstCanvasRef!: ElementRef<HTMLCanvasElement>;
 
-  content = '';
-  url = '';
+  content      = '';
+  url          = '';
   selectedFile: File | null = null;
-  fileName = '';
+  fileName     = '';
   selectedImageFile: File | null = null;
   imageFileName = '';
-  language = 'English';
-  length = 'Short';
-  format = 'Paragraph';
+  language     = 'English';
+  length       = 'Short';
+  format       = 'Paragraph';
   summaryResult = '';
-  isLoading = false;
+  isLoading    = false;
   errorMessage = '';
-  activeTab = 'text';
-  isCopied = false;
+  activeTab    = 'text';
+  isCopied     = false;
+  isShared     = false;
 
-  flashcards: Flashcard[] = [];
-  questions: QuestionItem[] = [];
+  flashcards: Flashcard[]    = [];
+  questions:  QuestionItem[] = [];
 
   // ── SUMMARY STATS ────────────────────────────────────────
-  wordCount = 0;
-  charCount = 0;
+  wordCount   = 0;
+  charCount   = 0;
   readingTime = 0;
+
+  // ── WORD REVEAL ──────────────────────────────────────────
+  revealedWords:  string[] = [];
+  isRevealing   = false;
+  private revealInterval: any;
 
   // ── TEXT SLIDER ──────────────────────────────────────────
   sliderPhrases = [
@@ -92,8 +89,8 @@ export class Dashboard implements OnInit, OnDestroy {
     '📥 Download summaries as PDF',
   ];
   currentPhraseIndex = 0;
-  currentPhrase = '';
-  isTyping = true;
+  currentPhrase      = '';
+  isTyping           = true;
   private typeInterval: any;
 
   languages = [
@@ -106,37 +103,41 @@ export class Dashboard implements OnInit, OnDestroy {
 
   constructor(
     private summaryService: SummaryService,
-    private authService: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-    private snackBar: MatSnackBar,
-    public themeService: ThemeService
+    private authService:    AuthService,
+    private router:         Router,
+    private cdr:            ChangeDetectorRef,
+    private snackBar:       MatSnackBar,
+    public  themeService:   ThemeService
   ) {}
 
-  ngOnInit(): void {
-    this.startSlider();
-  }
-
+  ngOnInit(): void  { this.startSlider(); }
   ngOnDestroy(): void {
     clearInterval(this.typeInterval);
+    clearInterval(this.revealInterval);
   }
 
-  // ── TEXT SLIDER LOGIC ────────────────────────────────────
-  private startSlider(): void {
-    this.typePhrase();
+  // ── LIVE INPUT WORD COUNT ────────────────────────────────
+  get inputWordCount(): number {
+    return this.content.trim()
+      ? this.content.trim().split(/\s+/).filter(w => w.length > 0).length
+      : 0;
   }
+
+  get inputCharCount(): number {
+    return this.content.length;
+  }
+
+  // ── TEXT SLIDER ───────────────────────────────────────────
+  private startSlider(): void { this.typePhrase(); }
 
   private typePhrase(): void {
     const phrase = this.sliderPhrases[this.currentPhraseIndex];
     this.currentPhrase = '';
     this.isTyping = true;
     let i = 0;
-
     this.typeInterval = setInterval(() => {
-      this.currentPhrase += phrase[i];
-      i++;
+      this.currentPhrase += phrase[i++];
       this.cdr.detectChanges();
-
       if (i >= phrase.length) {
         clearInterval(this.typeInterval);
         this.isTyping = false;
@@ -150,7 +151,6 @@ export class Dashboard implements OnInit, OnDestroy {
     this.typeInterval = setInterval(() => {
       this.currentPhrase = this.currentPhrase.slice(0, -1);
       this.cdr.detectChanges();
-
       if (this.currentPhrase.length === 0) {
         clearInterval(this.typeInterval);
         this.currentPhraseIndex =
@@ -162,10 +162,54 @@ export class Dashboard implements OnInit, OnDestroy {
 
   // ── SUMMARY STATS ────────────────────────────────────────
   private computeStats(text: string): void {
-    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
-    this.wordCount   = words.length;
-    this.charCount   = text.length;
-    this.readingTime = Math.max(1, Math.ceil(words.length / 200));
+    const words       = text.trim().split(/\s+/).filter(w => w.length > 0);
+    this.wordCount    = words.length;
+    this.charCount    = text.length;
+    this.readingTime  = Math.max(1, Math.ceil(words.length / 200));
+  }
+
+  // ── WORD REVEAL ANIMATION ────────────────────────────────
+  private animateReveal(text: string): void {
+    clearInterval(this.revealInterval);
+    const words       = text.split(' ');
+    this.revealedWords = [];
+    this.isRevealing  = true;
+    let i = 0;
+    this.revealInterval = setInterval(() => {
+      if (i < words.length) {
+        this.revealedWords.push(words[i++]);
+        this.cdr.detectChanges();
+      } else {
+        clearInterval(this.revealInterval);
+        this.isRevealing = false;
+        this.cdr.detectChanges();
+      }
+    }, 30); // 30ms per word → smooth and fast
+  }
+
+  // ── SHARE SUMMARY ────────────────────────────────────────
+  shareSummary(): void {
+    if (!this.summaryResult) return;
+    const shareText =
+      `📋 DISTILL — AI Summary\n` +
+      `${'─'.repeat(40)}\n\n` +
+      `${this.summaryResult}\n\n` +
+      `${'─'.repeat(40)}\n` +
+      `🌍 ${this.language}  •  📏 ${this.length}  •  ` +
+      `📊 ${this.wordCount} words  •  ⏱ ~${this.readingTime} min read\n` +
+      `Generated by DISTILL — https://distill-app-anshul9090s-projects.vercel.app`;
+
+    navigator.clipboard.writeText(shareText).then(() => {
+      this.isShared = true;
+      this.cdr.detectChanges();
+      this.snackBar.open('🔗 Summary copied — ready to share!', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'bottom',
+        panelClass: ['snack-success']
+      });
+      setTimeout(() => { this.isShared = false; this.cdr.detectChanges(); }, 3000);
+    });
   }
 
   // ── FLASHCARD FLIP ───────────────────────────────────────
@@ -174,40 +218,27 @@ export class Dashboard implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  // ── QUESTION REVEAL ──────────────────────────────────────
   toggleAnswer(q: QuestionItem) {
     q.revealed = !q.revealed;
     this.cdr.detectChanges();
   }
 
-  // ── PARSE FLASHCARDS ─────────────────────────────────────
   private parseFlashcards(raw: string): Flashcard[] {
-    return raw
-      .split('\n')
-      .filter(line => line.trim().startsWith('FLASHCARD::'))
-      .map(line => {
-        const parts = line.replace('FLASHCARD::', '').split('::');
-        return {
-          term: parts[0]?.trim() || '',
-          definition: parts[1]?.trim() || '',
-          flipped: false
-        };
+    return raw.split('\n')
+      .filter(l => l.trim().startsWith('FLASHCARD::'))
+      .map(l => {
+        const parts = l.replace('FLASHCARD::', '').split('::');
+        return { term: parts[0]?.trim() || '', definition: parts[1]?.trim() || '', flipped: false };
       })
       .filter(c => c.term && c.definition);
   }
 
-  // ── PARSE QUESTIONS ──────────────────────────────────────
   private parseQuestions(raw: string): QuestionItem[] {
-    return raw
-      .split('\n')
-      .filter(line => line.trim().startsWith('QUESTION::'))
-      .map(line => {
-        const parts = line.replace('QUESTION::', '').split('::');
-        return {
-          question: parts[0]?.trim() || '',
-          answer:   parts[1]?.trim() || '',
-          revealed: false
-        };
+    return raw.split('\n')
+      .filter(l => l.trim().startsWith('QUESTION::'))
+      .map(l => {
+        const parts = l.replace('QUESTION::', '').split('::');
+        return { question: parts[0]?.trim() || '', answer: parts[1]?.trim() || '', revealed: false };
       })
       .filter(q => q.question && q.answer);
   }
@@ -220,9 +251,7 @@ export class Dashboard implements OnInit, OnDestroy {
     if (!svg) return;
     svg.style.animation = 'toolbarFlaskShake 0.5s ease-in-out';
     this.spawnFlaskSpill(wrap);
-    setTimeout(() => {
-      svg.style.animation = 'toolbarFlaskGlow 3s ease-in-out infinite';
-    }, 520);
+    setTimeout(() => { svg.style.animation = 'toolbarFlaskGlow 3s ease-in-out infinite'; }, 520);
   }
 
   private spawnFlaskSpill(container: HTMLElement) {
@@ -235,12 +264,9 @@ export class Dashboard implements OnInit, OnDestroy {
       const sz    = 3 + Math.random() * 4;
       el.style.cssText = `
         position:absolute; width:${sz}px; height:${sz}px;
-        border-radius:50%; background:${col};
-        box-shadow:0 0 6px ${col};
-        left:50%; top:50%;
-        transform:translate(-50%,-50%);
-        pointer-events:none; z-index:200;
-      `;
+        border-radius:50%; background:${col}; box-shadow:0 0 6px ${col};
+        left:50%; top:50%; transform:translate(-50%,-50%);
+        pointer-events:none; z-index:200;`;
       container.style.position = 'relative';
       container.appendChild(el);
       const dur = 300 + Math.random() * 400;
@@ -253,57 +279,49 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   // ── PARTICLE BURST ────────────────────────────────────────
-  onSummarizeWithBurst() {
-    this.fireBurst();
-    this.onSummarize();
-  }
+  onSummarizeWithBurst() { this.fireBurst(); this.onSummarize(); }
 
   private fireBurst() {
     const canvas = this.burstCanvasRef?.nativeElement;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
-    const W  = canvas.width  = canvas.offsetWidth  || 400;
-    const H  = canvas.height = canvas.offsetHeight || 120;
+    const W = canvas.width  = canvas.offsetWidth  || 400;
+    const H = canvas.height = canvas.offsetHeight || 120;
     const cx = W / 2, cy = H / 2;
-
     const style = getComputedStyle(document.body);
     const p1  = style.getPropertyValue('--neon-primary').trim()   || '#f97316';
     const p2  = style.getPropertyValue('--neon-secondary').trim() || '#ec4899';
     const p3  = style.getPropertyValue('--neon-accent').trim()    || '#fbbf24';
     const cols = [p1, p2, p3, '#ffffff'];
-
-    interface Particle { x:number; y:number; vx:number; vy:number; r:number; col:string; alpha:number; life:number; }
-
+    interface Particle { x:number;y:number;vx:number;vy:number;r:number;col:string;alpha:number;life:number; }
     const particles: Particle[] = Array.from({ length: 60 }, () => {
       const angle = Math.random() * Math.PI * 2;
       const speed = 2 + Math.random() * 5;
-      return { x:cx, y:cy, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed,
-               r:2+Math.random()*3, col:cols[Math.floor(Math.random()*cols.length)],
-               alpha:1, life:0.018+Math.random()*0.02 };
+      return { x:cx,y:cy,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+               r:2+Math.random()*3,col:cols[Math.floor(Math.random()*cols.length)],
+               alpha:1,life:0.018+Math.random()*0.02 };
     });
-
     let animId: number;
     const animate = () => {
-      ctx.clearRect(0, 0, W, H);
+      ctx.clearRect(0,0,W,H);
       let alive = false;
       for (const p of particles) {
-        p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.vx *= 0.97; p.alpha -= p.life;
-        if (p.alpha <= 0) continue;
-        alive = true;
-        ctx.save(); ctx.globalAlpha = p.alpha;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-        ctx.fillStyle = p.col; ctx.shadowBlur = 8; ctx.shadowColor = p.col;
+        p.x+=p.vx; p.y+=p.vy; p.vy+=0.12; p.vx*=0.97; p.alpha-=p.life;
+        if (p.alpha<=0) continue;
+        alive=true;
+        ctx.save(); ctx.globalAlpha=p.alpha;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.col; ctx.shadowBlur=8; ctx.shadowColor=p.col;
         ctx.fill(); ctx.restore();
       }
-      if (alive) { animId = requestAnimationFrame(animate); }
+      if (alive) { animId=requestAnimationFrame(animate); }
       else { ctx.clearRect(0,0,W,H); cancelAnimationFrame(animId); }
     };
-    animId = requestAnimationFrame(animate);
+    animId=requestAnimationFrame(animate);
   }
 
-  // ── AUTH ─────────────────────────────────────────────────
+  // ── AUTH ──────────────────────────────────────────────────
   isAdmin(): boolean {
     const token = localStorage.getItem('accessToken');
     if (!token) return false;
@@ -331,14 +349,15 @@ export class Dashboard implements OnInit, OnDestroy {
 
   // ── SUMMARIZE ────────────────────────────────────────────
   onSummarize() {
-    this.errorMessage = '';
+    this.errorMessage  = '';
     this.summaryResult = '';
-    this.flashcards = [];
-    this.questions = [];
-    this.wordCount = 0;
-    this.charCount = 0;
-    this.readingTime = 0;
-    this.isLoading = true;
+    this.revealedWords = [];
+    this.flashcards    = [];
+    this.questions     = [];
+    this.wordCount     = 0;
+    this.charCount     = 0;
+    this.readingTime   = 0;
+    this.isLoading     = true;
     this.cdr.detectChanges();
 
     const handleResponse = (response: any) => {
@@ -350,6 +369,7 @@ export class Dashboard implements OnInit, OnDestroy {
       } else {
         this.summaryResult = raw;
         this.computeStats(raw);
+        this.animateReveal(raw); // ← word by word reveal
       }
       this.isLoading = false;
       this.cdr.detectChanges();
@@ -357,7 +377,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
     const handleError = (msg: string) => () => {
       this.errorMessage = msg;
-      this.isLoading = false;
+      this.isLoading    = false;
       this.cdr.detectChanges();
     };
 
@@ -386,7 +406,8 @@ export class Dashboard implements OnInit, OnDestroy {
     navigator.clipboard.writeText(this.summaryResult).then(() => {
       this.isCopied = true; this.cdr.detectChanges();
       this.snackBar.open('✅ Summary copied to clipboard!', 'Close', {
-        duration: 3000, horizontalPosition: 'end', verticalPosition: 'bottom', panelClass: ['snack-success']
+        duration: 3000, horizontalPosition: 'end', verticalPosition: 'bottom',
+        panelClass: ['snack-success']
       });
       setTimeout(() => { this.isCopied = false; this.cdr.detectChanges(); }, 3000);
     }).catch(() => this.snackBar.open('❌ Failed to copy!', 'Close', { duration: 3000 }));
@@ -399,7 +420,7 @@ export class Dashboard implements OnInit, OnDestroy {
     this.summaryService.generatePdf(payload).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a   = document.createElement('a');
         a.href = url; a.download = 'summary.pdf'; a.click();
         window.URL.revokeObjectURL(url);
       },
@@ -407,8 +428,8 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
-  // ── NAVIGATION ───────────────────────────────────────────
+  // ── NAV ───────────────────────────────────────────────────
   goToHistory() { this.router.navigate(['/history']); }
-  onLogout() { this.authService.logout(); this.router.navigate(['/login']); }
-  goToAdmin() { this.router.navigate(['/admin']); }
+  onLogout()    { this.authService.logout(); this.router.navigate(['/login']); }
+  goToAdmin()   { this.router.navigate(['/admin']); }
 }
