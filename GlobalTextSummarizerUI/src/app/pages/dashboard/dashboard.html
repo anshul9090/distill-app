@@ -143,11 +143,34 @@
       </mat-card-actions>
     </mat-card>
 
+    <!-- ── PARAGRAPH / BULLETS RESULT ─────────────────────── -->
     <mat-card class="result-card" *ngIf="summaryResult">
       <mat-card-header>
         <mat-card-title>Summary Result</mat-card-title>
         <mat-card-subtitle>{{language}} — {{length}} — {{format}}</mat-card-subtitle>
       </mat-card-header>
+
+      <!-- ── STATS BAR ──────────────────────────────────────── -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-icon">📊</span>
+          <span class="stat-value">{{wordCount}}</span>
+          <span class="stat-label">words</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-icon">🔤</span>
+          <span class="stat-value">{{charCount}}</span>
+          <span class="stat-label">characters</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-icon">⏱️</span>
+          <span class="stat-value">~{{readingTime}} min</span>
+          <span class="stat-label">read</span>
+        </div>
+      </div>
+
       <mat-card-content>
         <p class="summary-text">{{summaryResult}}</p>
       </mat-card-content>
@@ -161,6 +184,7 @@
       </mat-card-actions>
     </mat-card>
 
+    <!-- ── FLASHCARDS RESULT ───────────────────────────────── -->
     <div class="flashcards-section" *ngIf="flashcards.length > 0">
       <div class="section-header">
         <h2>🃏 Flashcards <span class="count-badge">{{flashcards.length}}</span></h2>
@@ -184,6 +208,7 @@
       </div>
     </div>
 
+    <!-- ── QUESTIONS RESULT ────────────────────────────────── -->
     <div class="questions-section" *ngIf="questions.length > 0">
       <div class="section-header">
         <h2>❓ Questions <span class="count-badge">{{questions.length}}</span></h2>
@@ -208,31 +233,33 @@
       </div>
     </div>
 
-   <div class="skeleton-container" *ngIf="isLoading">
-  <div class="skeleton-card">
-    <div class="skeleton-header">
-      <div class="skeleton-bar w60"></div>
-      <div class="skeleton-bar w30"></div>
+    <!-- ── SKELETON LOADING ────────────────────────────────── -->
+    <div class="skeleton-container" *ngIf="isLoading">
+      <div class="skeleton-card">
+        <div class="skeleton-header">
+          <div class="skeleton-bar w60"></div>
+          <div class="skeleton-bar w30"></div>
+        </div>
+        <div class="skeleton-body">
+          <div class="skeleton-line w100"></div>
+          <div class="skeleton-line w90"></div>
+          <div class="skeleton-line w95"></div>
+          <div class="skeleton-line w75"></div>
+          <div class="skeleton-line w85"></div>
+          <div class="skeleton-line w60"></div>
+        </div>
+        <div class="skeleton-footer">
+          <div class="skeleton-btn"></div>
+          <div class="skeleton-btn"></div>
+        </div>
+      </div>
+      <div class="skeleton-label">
+        <span class="skeleton-dot"></span>
+        <span class="skeleton-status">
+          {{ format === 'Flashcards' ? 'Creating flashcards...' : format === 'Questions' ? 'Generating questions...' : 'Generating summary...' }}
+        </span>
+      </div>
     </div>
-    <div class="skeleton-body">
-      <div class="skeleton-line w100"></div>
-      <div class="skeleton-line w90"></div>
-      <div class="skeleton-line w95"></div>
-      <div class="skeleton-line w75"></div>
-      <div class="skeleton-line w85"></div>
-      <div class="skeleton-line w60"></div>
-    </div>
-    <div class="skeleton-footer">
-      <div class="skeleton-btn"></div>
-      <div class="skeleton-btn"></div>
-    </div>
-  </div>
-  <div class="skeleton-label">
-    <span class="skeleton-dot"></span>
-    <span class="skeleton-status">
-      {{ format === 'Flashcards' ? 'Creating flashcards...' : format === 'Questions' ? 'Generating questions...' : 'Generating summary...' }}
-    </span>
-  </div>
-</div>
+
   </div>
 </div>

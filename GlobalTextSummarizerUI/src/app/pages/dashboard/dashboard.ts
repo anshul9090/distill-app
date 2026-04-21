@@ -73,6 +73,11 @@ export class Dashboard implements OnInit, OnDestroy {
   flashcards: Flashcard[] = [];
   questions: QuestionItem[] = [];
 
+  // ── SUMMARY STATS ────────────────────────────────────────
+  wordCount = 0;
+  charCount = 0;
+  readingTime = 0;
+
   // ── TEXT SLIDER ──────────────────────────────────────────
   sliderPhrases = [
     '⚡ Summarize anything in seconds',
@@ -153,6 +158,14 @@ export class Dashboard implements OnInit, OnDestroy {
         setTimeout(() => this.typePhrase(), 400);
       }
     }, 30);
+  }
+
+  // ── SUMMARY STATS ────────────────────────────────────────
+  private computeStats(text: string): void {
+    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+    this.wordCount   = words.length;
+    this.charCount   = text.length;
+    this.readingTime = Math.max(1, Math.ceil(words.length / 200));
   }
 
   // ── FLASHCARD FLIP ───────────────────────────────────────
@@ -322,6 +335,9 @@ export class Dashboard implements OnInit, OnDestroy {
     this.summaryResult = '';
     this.flashcards = [];
     this.questions = [];
+    this.wordCount = 0;
+    this.charCount = 0;
+    this.readingTime = 0;
     this.isLoading = true;
     this.cdr.detectChanges();
 
@@ -333,6 +349,7 @@ export class Dashboard implements OnInit, OnDestroy {
         this.questions = this.parseQuestions(raw);
       } else {
         this.summaryResult = raw;
+        this.computeStats(raw);
       }
       this.isLoading = false;
       this.cdr.detectChanges();

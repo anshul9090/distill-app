@@ -671,3 +671,48 @@
   0%   { left: -100%; }
   100% { left: 200%;  }
 }
+// ── STATS BAR ─────────────────────────────────────────────
+.stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 10px 16px;
+  margin: 0 0 4px;
+  background: rgba(168, 85, 247, 0.05);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+}
+
+.stat-icon {
+  font-size: 14px;
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #f97316, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 400;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(168, 85, 247, 0.2);
+  flex-shrink: 0;
+}
