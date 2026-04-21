@@ -208,9 +208,31 @@
       </div>
     </div>
 
-    <div class="loading-container" *ngIf="isLoading">
-      <mat-spinner></mat-spinner>
-      <p>{{ format === 'Flashcards' ? 'Creating flashcards...' : format === 'Questions' ? 'Generating questions...' : 'Generating summary...' }}</p>
+   <div class="skeleton-container" *ngIf="isLoading">
+  <div class="skeleton-card">
+    <div class="skeleton-header">
+      <div class="skeleton-bar w60"></div>
+      <div class="skeleton-bar w30"></div>
     </div>
+    <div class="skeleton-body">
+      <div class="skeleton-line w100"></div>
+      <div class="skeleton-line w90"></div>
+      <div class="skeleton-line w95"></div>
+      <div class="skeleton-line w75"></div>
+      <div class="skeleton-line w85"></div>
+      <div class="skeleton-line w60"></div>
+    </div>
+    <div class="skeleton-footer">
+      <div class="skeleton-btn"></div>
+      <div class="skeleton-btn"></div>
+    </div>
+  </div>
+  <div class="skeleton-label">
+    <span class="skeleton-dot"></span>
+    <span class="skeleton-status">
+      {{ format === 'Flashcards' ? 'Creating flashcards...' : format === 'Questions' ? 'Generating questions...' : 'Generating summary...' }}
+    </span>
+  </div>
+</div>
   </div>
 </div>
