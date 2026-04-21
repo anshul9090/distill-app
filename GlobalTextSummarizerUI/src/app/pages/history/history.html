@@ -5,6 +5,9 @@
   <mat-toolbar color="primary">
     <span class="toolbar-brand">📋 Summary History</span>
     <span class="spacer"></span>
+    <button mat-button (click)="exportCSV()" [disabled]="filteredSummaries.length === 0">
+      📥 Export CSV
+    </button>
     <button mat-button (click)="goToDashboard()">🏠 Dashboard</button>
     <button mat-button color="warn" (click)="clearAll()">🗑 Clear All</button>
     <button mat-button (click)="onLogout()">Logout</button>
@@ -24,10 +27,10 @@
       </div>
     </div>
 
-    <!-- ── SEARCH + FILTER BAR ──────────────────────────── -->
+    <!-- ── FILTER BAR ──────────────────────────────────────── -->
     <div class="filter-bar" *ngIf="!isLoading && summaries.length > 0">
 
-      <!-- Search input -->
+      <!-- Search -->
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input class="search-input"
@@ -37,22 +40,54 @@
         <button class="search-clear" *ngIf="searchQuery" (click)="searchQuery = ''">✕</button>
       </div>
 
-      <!-- Type filter -->
-      <div class="filter-chips">
-        <button class="filter-chip"
-                *ngFor="let type of inputTypes"
-                [class.active]="filterType === type"
-                (click)="filterType = type">
-          {{ type === 'All' ? '📋 All' :
-             type === 'Text' ? '📝 Text' :
-             type === 'PDF' ? '📄 PDF' :
-             type === 'URL' ? '🔗 URL' : '🖼️ Image' }}
-        </button>
+      <!-- Row 1: Type + Date filters -->
+      <div class="filter-row">
+        <div class="filter-group">
+          <span class="filter-group-label">Type</span>
+          <div class="filter-chips">
+            <button class="filter-chip"
+                    *ngFor="let type of inputTypes"
+                    [class.active]="filterType === type"
+                    (click)="filterType = type">
+              {{ type === 'All' ? '📋 All' :
+                 type === 'Text' ? '📝 Text' :
+                 type === 'PDF' ? '📄 PDF' :
+                 type === 'URL' ? '🔗 URL' : '🖼️ Image' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-group-label">Date</span>
+          <div class="filter-chips">
+            <button class="filter-chip"
+                    *ngFor="let range of dateRanges"
+                    [class.active]="filterDate === range"
+                    (click)="filterDate = range">
+              {{ range === 'All' ? '🗓 All' :
+                 range === 'Today' ? '☀️ Today' :
+                 range === 'This Week' ? '📅 Week' : '🗃 Month' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Language filter -->
+      <div class="filter-group">
+        <span class="filter-group-label">Language</span>
+        <div class="filter-chips">
+          <button class="filter-chip"
+                  *ngFor="let lang of languages"
+                  [class.active]="filterLanguage === lang"
+                  (click)="filterLanguage = lang">
+            {{ lang }}
+          </button>
+        </div>
       </div>
 
       <!-- Tag filter -->
       <div class="tag-filter-row" *ngIf="allUsedTags.length > 0">
-        <span class="tag-filter-label">🏷 Filter by tag:</span>
+        <span class="tag-filter-label">🏷 Tags:</span>
         <button class="filter-chip tag-chip"
                 [class.active]="filterTag === 'All'"
                 (click)="filterTag = 'All'">All</button>
@@ -66,8 +101,9 @@
 
       <!-- Reset -->
       <button class="reset-btn" *ngIf="isFiltering" (click)="resetFilters()">
-        ✕ Clear filters
+        ✕ Clear all filters
       </button>
+
     </div>
 
     <!-- Loading -->
@@ -79,7 +115,7 @@
     <!-- Error -->
     <div *ngIf="errorMessage" class="error-banner">⚠ {{ errorMessage }}</div>
 
-    <!-- Empty state — no summaries at all -->
+    <!-- Empty — no summaries -->
     <div *ngIf="!isLoading && summaries.length === 0 && !errorMessage" class="empty-state">
       <div class="empty-icon">📄</div>
       <h3>No summaries yet</h3>
@@ -87,7 +123,7 @@
       <button class="go-btn" mat-raised-button (click)="goToDashboard()">Go to Dashboard →</button>
     </div>
 
-    <!-- Empty state — filters returned nothing -->
+    <!-- Empty — filters returned nothing -->
     <div *ngIf="!isLoading && summaries.length > 0 && filteredSummaries.length === 0" class="empty-state">
       <div class="empty-icon">🔍</div>
       <h3>No results found</h3>
@@ -113,23 +149,21 @@
 
         <!-- Tags row -->
         <div class="tags-row">
-          <!-- Existing tags -->
           <span class="tag-pill"
                 *ngFor="let tag of getTagsFor(summary.id)"
                 (click)="filterTag = tag"
                 title="Click to filter by this tag">
             🏷 {{ tag }}
-            <button class="tag-remove" (click)="$event.stopPropagation(); removeTag(summary.id, tag)">✕</button>
+            <button class="tag-remove"
+                    (click)="$event.stopPropagation(); removeTag(summary.id, tag)">✕</button>
           </span>
 
-          <!-- Add tag button -->
           <button class="add-tag-btn"
                   *ngIf="editingTagId !== summary.id"
                   (click)="startTagEdit(summary.id)">
             + Add tag
           </button>
 
-          <!-- Tag input (inline) -->
           <div class="tag-input-wrap" *ngIf="editingTagId === summary.id">
             <input class="tag-input"
                    type="text"
@@ -140,7 +174,6 @@
                    autofocus>
             <button class="tag-confirm" (click)="addTagFromInput(summary.id)">✓</button>
             <button class="tag-cancel"  (click)="cancelTagEdit()">✕</button>
-            <!-- Quick suggestions -->
             <div class="tag-suggestions">
               <button class="tag-suggestion-pill"
                       *ngFor="let s of tagSuggestions"
