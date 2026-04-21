@@ -33,29 +33,30 @@ export class Register {
   password = '';
   errorMessage = '';
   successMessage = '';
-    isLoading = false;
+  isLoading = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-          private cdr: ChangeDetectorRef,
-  ) {}
+    private cdr: ChangeDetectorRef,
+  ) { }
 
   onRegister() {
     this.isLoading = true;
-     this.cdr.detectChanges();  // ← add this
+    this.cdr.detectChanges();  // ← add this
     this.authService.register(this.name, this.email, this.password)
       .subscribe({
         next: (response: any) => {
-          localStorage.setItem('pendingEmail', this.email);
-          this.isLoading = false;  // ← add this
-          this.router.navigate(['/verify-otp']);
+          this.authService.saveToken(response.accessToken); // ← save token
+          localStorage.setItem('refreshToken', response.refreshToken);
+          this.isLoading = false;
+          this.router.navigate(['/dashboard']); // ← go straight to dashboard
         },
         error: (err: any) => {
           this.errorMessage = 'Registration failed. Try again!';
-          this.isLoading = false;  
-           this.cdr.detectChanges();// ← add this
+          this.isLoading = false;
+          this.cdr.detectChanges();// ← add this
         }
       });
-}
+  }
 }
