@@ -827,3 +827,83 @@
   &--light-rose   { background: #e11d48; border: 1px solid rgba(0,0,0,0.1); }
   &--light-ocean  { background: #0284c7; border: 1px solid rgba(0,0,0,0.1); }
 }
+// ── LIGHT THEME FLASHCARD & QUESTION FIX ─────────────────
+body.theme-light,
+body.theme-light-rose,
+body.theme-light-ocean {
+
+  .flashcard-front {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: var(--dark-border) !important;
+  }
+
+  .flashcard-back {
+    background: rgba(124, 58, 237, 0.08) !important;
+    border-color: var(--dark-border) !important;
+  }
+
+  .card-label {
+    color: var(--neon-primary) !important;
+    opacity: 1 !important;
+  }
+
+  .card-content {
+    color: var(--text-primary) !important;
+  }
+
+  .card-tap-hint {
+    color: var(--text-secondary) !important;
+  }
+
+  .question-item {
+    background: rgba(255, 255, 255, 0.85) !important;
+    border-color: var(--dark-border) !important;
+  }
+
+  .question-number {
+    color: var(--neon-primary) !important;
+    background: rgba(124, 58, 237, 0.08) !important;
+    border-color: var(--dark-border) !important;
+  }
+
+  .question-text {
+    color: var(--text-primary) !important;
+  }
+
+  .answer-box {
+    background: rgba(2, 132, 199, 0.06) !important;
+    border-left-color: var(--neon-primary) !important;
+  }
+
+  .answer-label {
+    color: var(--neon-primary) !important;
+  }
+
+  .answer-text {
+    color: var(--text-primary) !important;
+  }
+
+  .reveal-btn {
+    color: var(--neon-primary) !important;
+    border-color: var(--dark-border) !important;
+    background: rgba(124, 58, 237, 0.06) !important;
+    &:hover {
+      background: rgba(124, 58, 237, 0.12) !important;
+      border-color: var(--neon-primary) !important;
+    }
+  }
+
+  .summary-text {
+    color: var(--text-primary) !important;
+  }
+
+  .format-hint {
+    color: var(--neon-accent) !important;
+  }
+
+  .skeleton-status {
+    background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}
