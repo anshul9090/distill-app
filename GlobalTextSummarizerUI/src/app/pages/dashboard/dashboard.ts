@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, ChangeDetectorRef, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -52,7 +52,7 @@ export interface QuestionItem {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
-export class Dashboard {
+export class Dashboard implements OnInit, OnDestroy {
   @ViewChild('burstCanvas') burstCanvasRef!: ElementRef<HTMLCanvasElement>;
 
   content = '';
@@ -70,9 +70,26 @@ export class Dashboard {
   activeTab = 'text';
   isCopied = false;
 
-  // ── NEW: structured results ──────────────────────────────
   flashcards: Flashcard[] = [];
   questions: QuestionItem[] = [];
+
+  // ── TEXT SLIDER ──────────────────────────────────────────
+  sliderPhrases = [
+    '⚡ Summarize anything in seconds',
+    '🌍 Supports 12 languages',
+    '🃏 Generate flashcards instantly',
+    '📄 Upload PDFs & images',
+    '🔗 Summarize any URL',
+    '❓ Create exam-style questions',
+    '📋 Save & revisit your history',
+    '🎨 Multiple themes available',
+    '🧠 Powered by Llama 3.3 70B',
+    '📥 Download summaries as PDF',
+  ];
+  currentPhraseIndex = 0;
+  currentPhrase = '';
+  isTyping = true;
+  private typeInterval: any;
 
   languages = [
     'English', 'Hindi', 'Spanish', 'French',
@@ -91,6 +108,53 @@ export class Dashboard {
     public themeService: ThemeService
   ) {}
 
+  ngOnInit(): void {
+    this.startSlider();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.typeInterval);
+  }
+
+  // ── TEXT SLIDER LOGIC ────────────────────────────────────
+  private startSlider(): void {
+    this.typePhrase();
+  }
+
+  private typePhrase(): void {
+    const phrase = this.sliderPhrases[this.currentPhraseIndex];
+    this.currentPhrase = '';
+    this.isTyping = true;
+    let i = 0;
+
+    this.typeInterval = setInterval(() => {
+      this.currentPhrase += phrase[i];
+      i++;
+      this.cdr.detectChanges();
+
+      if (i >= phrase.length) {
+        clearInterval(this.typeInterval);
+        this.isTyping = false;
+        this.cdr.detectChanges();
+        setTimeout(() => this.erasePhrase(), 2000);
+      }
+    }, 50);
+  }
+
+  private erasePhrase(): void {
+    this.typeInterval = setInterval(() => {
+      this.currentPhrase = this.currentPhrase.slice(0, -1);
+      this.cdr.detectChanges();
+
+      if (this.currentPhrase.length === 0) {
+        clearInterval(this.typeInterval);
+        this.currentPhraseIndex =
+          (this.currentPhraseIndex + 1) % this.sliderPhrases.length;
+        setTimeout(() => this.typePhrase(), 400);
+      }
+    }, 30);
+  }
+
   // ── FLASHCARD FLIP ───────────────────────────────────────
   flipCard(card: Flashcard) {
     card.flipped = !card.flipped;
@@ -103,7 +167,7 @@ export class Dashboard {
     this.cdr.detectChanges();
   }
 
-  // ── PARSE FLASHCARDS FROM RESPONSE ──────────────────────
+  // ── PARSE FLASHCARDS ─────────────────────────────────────
   private parseFlashcards(raw: string): Flashcard[] {
     return raw
       .split('\n')
@@ -119,7 +183,7 @@ export class Dashboard {
       .filter(c => c.term && c.definition);
   }
 
-  // ── PARSE QUESTIONS FROM RESPONSE ───────────────────────
+  // ── PARSE QUESTIONS ──────────────────────────────────────
   private parseQuestions(raw: string): QuestionItem[] {
     return raw
       .split('\n')
@@ -284,17 +348,14 @@ export class Dashboard {
       if (!this.content.trim()) { this.errorMessage = 'Please enter some text!'; this.isLoading = false; return; }
       this.summaryService.summarize('Text', this.content, this.language, this.length, this.format)
         .subscribe({ next: handleResponse, error: handleError('Failed to summarize!') });
-
     } else if (this.activeTab === 'url') {
       if (!this.url.trim()) { this.errorMessage = 'Please enter a URL!'; this.isLoading = false; return; }
       this.summaryService.summarizeUrl(this.url, this.language, this.length, this.format)
         .subscribe({ next: handleResponse, error: handleError('Failed to summarize URL!') });
-
     } else if (this.activeTab === 'pdf') {
       if (!this.selectedFile) { this.errorMessage = 'Please select a PDF file!'; this.isLoading = false; return; }
       this.summaryService.summarizePdf(this.selectedFile, this.language, this.length, this.format)
         .subscribe({ next: handleResponse, error: handleError('Failed to summarize PDF!') });
-
     } else if (this.activeTab === 'image') {
       if (!this.selectedImageFile) { this.errorMessage = 'Please select an image!'; this.isLoading = false; return; }
       this.summaryService.summarizeImage(this.selectedImageFile, this.language, this.length, this.format)

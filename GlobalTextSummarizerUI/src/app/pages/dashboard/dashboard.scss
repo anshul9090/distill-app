@@ -489,3 +489,62 @@
   border: 1px solid var(--neon-cyan, #06b6d4) !important;
   border-radius: 8px !important;
 }
+// ── TEXT SLIDER ───────────────────────────────────────────
+.slider-bar {
+  width: 100%;
+  background: linear-gradient(90deg,
+    rgba(249,115,22,0.06),
+    rgba(168,85,247,0.10),
+    rgba(236,72,153,0.06)
+  );
+  border-bottom: 1px solid rgba(249,115,22,0.15);
+  padding: 7px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 99;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(249,115,22,0.05),
+      transparent
+    );
+    animation: shimmer 3s infinite;
+  }
+}
+
+.slider-text {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #f97316, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cursor {
+  -webkit-text-fill-color: #f97316;
+  font-weight: 300;
+  margin-left: 1px;
+
+  &.blink {
+    animation: blink 1s step-end infinite;
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes shimmer {
+  0%   { left: -100%; }
+  100% { left: 200%;  }
+}

@@ -1,7 +1,14 @@
 <app-particle-background></app-particle-background>
 <div class="dashboard-container">
-  <mat-toolbar color="primary" class="dashboard-toolbar">
 
+  <!-- ── ANIMATED TEXT SLIDER ───────────────────────────── -->
+  <div class="slider-bar">
+    <span class="slider-text">
+      {{ currentPhrase }}<span class="cursor" [class.blink]="!isTyping">|</span>
+    </span>
+  </div>
+
+  <mat-toolbar color="primary" class="dashboard-toolbar">
     <div class="toolbar-flask-wrap" (click)="shakeFlask()">
       <svg class="toolbar-flask-svg" viewBox="0 0 70 92" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -113,7 +120,6 @@
           </mat-form-field>
         </div>
 
-        <!-- Format hint -->
         <div class="format-hint" *ngIf="format === 'Flashcards'">
           🃏 Generates flippable study cards — click any card to reveal the definition
         </div>
@@ -137,7 +143,6 @@
       </mat-card-actions>
     </mat-card>
 
-    <!-- ── PARAGRAPH / BULLETS RESULT ─────────────────────── -->
     <mat-card class="result-card" *ngIf="summaryResult">
       <mat-card-header>
         <mat-card-title>Summary Result</mat-card-title>
@@ -156,7 +161,6 @@
       </mat-card-actions>
     </mat-card>
 
-    <!-- ── FLASHCARDS RESULT ───────────────────────────────── -->
     <div class="flashcards-section" *ngIf="flashcards.length > 0">
       <div class="section-header">
         <h2>🃏 Flashcards <span class="count-badge">{{flashcards.length}}</span></h2>
@@ -180,7 +184,6 @@
       </div>
     </div>
 
-    <!-- ── QUESTIONS RESULT ────────────────────────────────── -->
     <div class="questions-section" *ngIf="questions.length > 0">
       <div class="section-header">
         <h2>❓ Questions <span class="count-badge">{{questions.length}}</span></h2>
