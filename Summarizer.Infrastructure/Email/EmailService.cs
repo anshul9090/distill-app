@@ -19,7 +19,7 @@ namespace Summarizer.Infrastructure.Email
         public async Task SendOtpEmailAsync(string toEmail, string otpCode)
         {
             var apiKey = _configuration["RESEND_API_KEY"]
-    ?? _configuration["EmailSettings__AppPassword"];
+                ?? _configuration["EmailSettings__AppPassword"];
 
             var payload = new
             {
@@ -42,12 +42,12 @@ namespace Summarizer.Infrastructure.Email
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
             var response = await _httpClient.PostAsync("https://api.resend.com/emails", content);
-            var body = await response.Content.ReadAsStringAsync();
-
-            Console.WriteLine($"Resend response: {response.StatusCode} - {body}");
 
             if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Email failed: {body}");
+            }
         }
     }
 }

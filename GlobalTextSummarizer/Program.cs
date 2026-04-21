@@ -17,8 +17,12 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── DATABASE ─────────────────────────────────────────────
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Host=ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech;Port=5432;Database=neondb;Username=neondb_owner;Password=npg_JGHd7q9ZDFMz;SSL Mode=Require;Trust Server Certificate=true";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new InvalidOperationException(
+        "Database connection string is not configured. " +
+        "Set ConnectionStrings__DefaultConnection in Railway environment variables.");
 
 builder.Services.AddDbContext<SummarizerDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -43,12 +47,12 @@ builder.Services.Configure<IpRateLimitOptions>(options =>
     options.StackBlockedRequests = false;
     options.GeneralRules = new List<RateLimitRule>
     {
-        new RateLimitRule { Endpoint = "POST:/api/summary/summarize", Limit = 10, Period = "1m" },
-        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-pdf", Limit = 10, Period = "1m" },
-        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-url", Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/summary/summarize",       Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-pdf",   Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-url",   Limit = 10, Period = "1m" },
         new RateLimitRule { Endpoint = "POST:/api/summary/summarize-image", Limit = 10, Period = "1m" },
-        new RateLimitRule { Endpoint = "POST:/api/auth/login", Limit = 5, Period = "1m" },
-        new RateLimitRule { Endpoint = "POST:/api/otp/send", Limit = 3, Period = "5m" }
+        new RateLimitRule { Endpoint = "POST:/api/auth/login",              Limit = 5,  Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/otp/send",                Limit = 3,  Period = "5m" }
     };
 });
 builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
@@ -82,7 +86,7 @@ builder.Services.AddAuthorization();
 // ── ENCODING (PDF fonts) ──────────────────────────────────
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-// ── CONTROLLERS + SWAGGER ────────────────────────────────
+// ── CONTROLLERS ──────────────────────────────────────────
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -121,7 +125,7 @@ builder.Services.AddSwaggerGen(options =>
             Reference = new OpenApiReference
             {
                 Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
+                Id   = "Bearer"
             }
         },
         new string[] {}
@@ -134,8 +138,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
-    await db.Database.MigrateAsync();
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    await db.Database.MigrateAsync();
     await seeder.SeedAsync();
 }
 
@@ -149,9 +153,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 if (!app.Environment.IsDevelopment())
-{
     app.UseHsts();
-}
 
 app.UseIpRateLimiting();
 app.UseCors("AllowAngular");
