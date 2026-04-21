@@ -47,10 +47,12 @@ export class Register {
     this.authService.register(this.name, this.email, this.password)
       .subscribe({
         next: (response: any) => {
-          this.authService.saveToken(response.accessToken); // ← save token
-          localStorage.setItem('refreshToken', response.refreshToken);
           this.isLoading = false;
-          this.router.navigate(['/dashboard']); // ← go straight to dashboard
+          this.successMessage = 'Registration successful! Please login.';
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.router.navigate(['/']); // ← back to landing/login page
+          }, 1500); // small delay so user sees success message
         },
         error: (err: any) => {
           this.errorMessage = 'Registration failed. Try again!';
