@@ -39,7 +39,7 @@ export class Admin implements OnInit {
   userSearch    = '';
   summarySearch = '';
 
-  // pagination for summaries
+  // pagination
   summaryPage     = 1;
   summaryPageSize = 6;
 
@@ -131,10 +131,84 @@ export class Admin implements OnInit {
   prevPage() { if (this.summaryPage > 1) this.summaryPage--; }
   nextPage() { if (this.summaryPage < this.totalSummaryPages) this.summaryPage++; }
 
-  // ── COMPUTED STATS ────────────────────────────────────
-  get activeUsers()   { return this.users.filter(u => !u.isDeleted).length; }
-  get deletedUsers()  { return this.users.filter(u =>  u.isDeleted).length; }
-  get adminUsers()    { return this.users.filter(u => u.roleId === 1).length; }
+  // ── BASIC STATS ───────────────────────────────────────
+  get activeUsers()  { return this.users.filter(u => !u.isDeleted).length; }
+  get deletedUsers() { return this.users.filter(u =>  u.isDeleted).length; }
+  get adminUsers()   { return this.users.filter(u => u.roleId === 1).length; }
+
+  // ── INPUT TYPE BREAKDOWN ──────────────────────────────
+  get inputTypeStats(): { type: string; count: number; percent: number; icon: string }[] {
+    const types = ['Text', 'PDF', 'URL', 'Image'];
+    const icons = ['📝', '📄', '🔗', '🖼️'];
+    const total = this.summaries.length || 1;
+    return types.map((type, i) => {
+      const count = this.summaries.filter(s =>
+        s.inputType?.toLowerCase() === type.toLowerCase()
+      ).length;
+      return { type, count, percent: Math.round((count / total) * 100), icon: icons[i] };
+    });
+  }
+
+  // ── TOP LANGUAGES ─────────────────────────────────────
+  get languageStats(): { language: string; count: number; percent: number }[] {
+    const map: Record<string, number> = {};
+    this.summaries.forEach(s => {
+      const lang = s.language || 'Unknown';
+      map[lang] = (map[lang] || 0) + 1;
+    });
+    const total = this.summaries.length || 1;
+    return Object.entries(map)
+      .map(([language, count]) => ({
+        language,
+        count,
+        percent: Math.round((count / total) * 100)
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6);
+  }
+
+  // ── LAST 7 DAYS ACTIVITY ──────────────────────────────
+  get last7DaysStats(): { day: string; count: number; percent: number }[] {
+    const days: { day: string; date: Date; count: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push({
+        day: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        date: d,
+        count: 0
+      });
+    }
+    this.summaries.forEach(s => {
+      const created = new Date(s.createdAt);
+      const match = days.find(d =>
+        d.date.toDateString() === created.toDateString()
+      );
+      if (match) match.count++;
+    });
+    const max = Math.max(...days.map(d => d.count), 1);
+    return days.map(d => ({
+      day:     d.day,
+      count:   d.count,
+      percent: Math.round((d.count / max) * 100)
+    }));
+  }
+
+  // ── TODAY STATS ───────────────────────────────────────
+  get todaySummaries(): number {
+    const today = new Date().toDateString();
+    return this.summaries.filter(s =>
+      new Date(s.createdAt).toDateString() === today
+    ).length;
+  }
+
+  get thisWeekSummaries(): number {
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return this.summaries.filter(s =>
+      new Date(s.createdAt) >= weekAgo
+    ).length;
+  }
 
   // ── ACTIONS ───────────────────────────────────────────
   deleteUser(id: number) {

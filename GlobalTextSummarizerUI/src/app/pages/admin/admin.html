@@ -13,7 +13,7 @@
   <!-- Error banner -->
   <div class="error-banner" *ngIf="errorMessage">⚠ {{ errorMessage }}</div>
 
-  <!-- Stats row -->
+  <!-- ── TOP STATS ROW ──────────────────────────────────── -->
   <div class="stats">
     <div class="stat-card">
       <div class="stat-icon">👥</div>
@@ -30,22 +30,96 @@
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">🗑</div>
-      <div class="stat-body">
-        <div class="stat-num">{{ deletedUsers }}</div>
-        <div class="stat-label">Deleted</div>
-      </div>
-    </div>
-    <div class="stat-card">
       <div class="stat-icon">📄</div>
       <div class="stat-body">
         <div class="stat-num">{{ summaries.length }}</div>
-        <div class="stat-label">Summaries</div>
+        <div class="stat-label">Total Summaries</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">☀️</div>
+      <div class="stat-body">
+        <div class="stat-num">{{ todaySummaries }}</div>
+        <div class="stat-label">Today</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div class="stat-body">
+        <div class="stat-num">{{ thisWeekSummaries }}</div>
+        <div class="stat-label">This Week</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👑</div>
+      <div class="stat-body">
+        <div class="stat-num">{{ adminUsers }}</div>
+        <div class="stat-label">Admins</div>
       </div>
     </div>
   </div>
 
-  <!-- USERS CARD -->
+  <!-- ── CHARTS ROW ─────────────────────────────────────── -->
+  <div class="charts-row" *ngIf="!summariesLoading && summaries.length > 0">
+
+    <!-- Input Type Breakdown -->
+    <div class="chart-card">
+      <div class="chart-title">📊 Input Type Breakdown</div>
+      <div class="bar-list">
+        <div class="bar-item" *ngFor="let stat of inputTypeStats">
+          <div class="bar-label-row">
+            <span class="bar-icon-label">{{ stat.icon }} {{ stat.type }}</span>
+            <span class="bar-count">{{ stat.count }}</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill type-fill"
+                 [style.width.%]="stat.percent">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Languages -->
+    <div class="chart-card">
+      <div class="chart-title">🌍 Top Languages</div>
+      <div class="bar-list">
+        <div class="bar-item" *ngFor="let stat of languageStats">
+          <div class="bar-label-row">
+            <span class="bar-icon-label">{{ stat.language }}</span>
+            <span class="bar-count">{{ stat.count }}</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill lang-fill"
+                 [style.width.%]="stat.percent">
+            </div>
+          </div>
+        </div>
+        <div class="empty-chart" *ngIf="languageStats.length === 0">
+          No language data yet
+        </div>
+      </div>
+    </div>
+
+    <!-- Last 7 Days Activity -->
+    <div class="chart-card chart-card--wide">
+      <div class="chart-title">📈 Last 7 Days Activity</div>
+      <div class="activity-bars">
+        <div class="activity-col" *ngFor="let day of last7DaysStats">
+          <div class="activity-bar-wrap">
+            <span class="activity-count" *ngIf="day.count > 0">{{ day.count }}</span>
+            <div class="activity-bar"
+                 [style.height.%]="day.percent || 4">
+            </div>
+          </div>
+          <span class="activity-day">{{ day.day }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── USERS CARD ──────────────────────────────────────── -->
   <div class="admin-card">
     <div class="card-header">
       <span class="card-title">👥 Users</span>
@@ -57,13 +131,11 @@
       </div>
     </div>
 
-    <!-- Loading -->
     <div *ngIf="usersLoading" class="loading-row">
       <div class="spinner"></div>
       <span>Loading users…</span>
     </div>
 
-    <!-- Table -->
     <div class="table-wrap" *ngIf="!usersLoading">
       <table mat-table [dataSource]="filteredUsers">
 
@@ -127,7 +199,6 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
       </table>
 
       <div *ngIf="filteredUsers.length === 0" class="empty-state">
@@ -136,7 +207,7 @@
     </div>
   </div>
 
-  <!-- SUMMARIES CARD -->
+  <!-- ── SUMMARIES CARD ──────────────────────────────────── -->
   <div class="admin-card">
     <div class="card-header">
       <span class="card-title">📄 Summaries</span>
@@ -148,13 +219,11 @@
       </div>
     </div>
 
-    <!-- Loading -->
     <div *ngIf="summariesLoading" class="loading-row">
       <div class="spinner"></div>
       <span>Loading summaries…</span>
     </div>
 
-    <!-- List -->
     <div *ngIf="!summariesLoading">
       <div *ngFor="let s of pagedSummaries" class="summary-box">
         <div class="summary-meta">
@@ -169,7 +238,6 @@
         No summaries found.
       </div>
 
-      <!-- Pagination -->
       <div class="pagination" *ngIf="totalSummaryPages > 1">
         <button class="page-btn" (click)="prevPage()"
                 [disabled]="summaryPage === 1">← Prev</button>
@@ -178,7 +246,6 @@
                 [disabled]="summaryPage === totalSummaryPages">Next →</button>
       </div>
     </div>
-
   </div>
 
 </div>

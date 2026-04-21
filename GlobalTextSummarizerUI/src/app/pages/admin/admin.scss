@@ -347,3 +347,153 @@ mat-toolbar {
   .card-header { padding: 14px 16px; }
   .summary-date { display: none; }
 }
+// ── CHARTS ROW ────────────────────────────────────────────
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 24px 0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    margin: 16px 12px 0;
+  }
+}
+
+.chart-card {
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 18px;
+  padding: 22px 24px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+  animation: fadeInUp 0.5s ease forwards;
+
+  &--wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.chart-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--neon-primary);
+  letter-spacing: 0.3px;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+// ── BAR CHART ─────────────────────────────────────────────
+.bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bar-item { display: flex; flex-direction: column; gap: 5px; }
+
+.bar-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bar-icon-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+}
+
+.bar-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--neon-primary);
+}
+
+.bar-track {
+  height: 7px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 4px;
+}
+
+.type-fill {
+  background: linear-gradient(90deg, #f97316, #ec4899);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
+}
+
+.lang-fill {
+  background: linear-gradient(90deg, #a855f7, #06b6d4);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+}
+
+.empty-chart {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  padding: 20px 0;
+}
+
+// ── ACTIVITY CHART ────────────────────────────────────────
+.activity-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  height: 100px;
+  padding-top: 20px;
+}
+
+.activity-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.activity-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 80px;
+  width: 100%;
+  position: relative;
+}
+
+.activity-count {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--neon-primary);
+  margin-bottom: 3px;
+}
+
+.activity-bar {
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, #f97316, rgba(249,115,22,0.3));
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 4px;
+}
+
+.activity-day {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
