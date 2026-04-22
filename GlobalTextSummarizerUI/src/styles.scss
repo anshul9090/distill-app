@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @use 'sass:map';
+@import 'theme-overrides';
 
 @include mat.core();
 
@@ -339,107 +340,6 @@ input, textarea {
 
 .mat-mdc-progress-spinner circle {
   stroke: var(--neon-primary) !important;
-}
-
-// ── LIGHT THEMES SHARED OVERRIDES ────────────────────────
-body.theme-light,
-body.theme-light-rose,
-body.theme-light-ocean {
-  background-color: var(--dark-bg);
-  color: var(--text-primary);
-
-  input, textarea {
-    color: var(--text-primary) !important;
-    caret-color: var(--neon-primary) !important;
-  }
-
-  .mdc-floating-label,
-  .mat-mdc-floating-label { color: var(--text-secondary) !important; }
-
-  .mdc-notched-outline__notch label { color: var(--text-secondary) !important; }
-
-  .mat-mdc-select-value  { color: var(--text-primary)   !important; }
-  .mat-mdc-select-arrow  { color: var(--text-secondary) !important; }
-
-  .mat-mdc-option {
-    color: var(--text-primary) !important;
-    background: var(--dark-card) !important;
-  }
-
-  .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      border-color: var(--dark-border) !important;
-    }
-  }
-
-  .mat-mdc-card {
-    background: var(--dark-card) !important;
-    color: var(--text-primary) !important;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
-  }
-
-  .mat-mdc-card-title    { color: var(--text-primary)   !important; }
-  .mat-mdc-card-subtitle { color: var(--text-secondary) !important; }
-
-  .mat-mdc-menu-panel {
-    background: var(--dark-card) !important;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.12) !important;
-  }
-
-  .mat-mdc-menu-item {
-    color: var(--text-primary) !important;
-    &:hover { background: rgba(0,0,0,0.04) !important; }
-  }
-
-  .mat-toolbar {
-    background: var(--dark-card) !important;
-    color: var(--text-primary) !important;
-    border-bottom: 1px solid var(--dark-border) !important;
-  }
-
-  .mat-toolbar button.mat-mdc-button,
-  .mat-toolbar button.mat-mdc-icon-button {
-    color: var(--text-primary) !important;
-  }
-
-  p, span, h1, h2, h3, h4 { color: var(--text-primary); }
-
-  .summary-text { color: var(--text-primary) !important; }
-
-  .neon-text {
-    background: linear-gradient(135deg, var(--neon-primary), var(--neon-accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .glass-card {
-    background: var(--dark-card) !important;
-    border: 1px solid var(--dark-border) !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
-  }
-
-  .tab-buttons button {
-    color: var(--text-secondary) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .pdf-upload {
-    border-color: var(--dark-border) !important;
-    color: var(--text-secondary) !important;
-    &:hover { background: rgba(0,0,0,0.02) !important; }
-  }
-
-  .error-message { color: #dc2626 !important; }
-
-  .mat-mdc-progress-spinner circle {
-    stroke: var(--neon-primary) !important;
-  }
-
-  ::-webkit-scrollbar-track { background: var(--dark-bg); }
-  ::-webkit-scrollbar-thumb { background: var(--neon-primary) !important; }
 }
 
 // ── SNACKBAR ──────────────────────────────────────────────

@@ -8,7 +8,7 @@
 
 // ── TOOLBAR ───────────────────────────────────────────────
 .dashboard-toolbar {
-  background: rgba(19, 19, 26, 0.9) !important;
+  background: var(--dark-card, rgba(19, 19, 26, 0.9)) !important;
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(181, 55, 242, 0.3);
   position: sticky;
@@ -131,7 +131,7 @@
 
 // ── CARDS ─────────────────────────────────────────────────
 .input-card {
-  background: rgba(19, 19, 26, 0.85) !important;
+  background: var(--dark-card, rgba(19, 19, 26, 0.85)) !important;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(181, 55, 242, 0.2) !important;
   margin-bottom: 24px;
@@ -139,7 +139,7 @@
 }
 
 .result-card {
-  background: rgba(19, 19, 26, 0.85) !important;
+  background: var(--dark-card, rgba(19, 19, 26, 0.85)) !important;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(6, 182, 212, 0.3) !important;
   margin-bottom: 24px;
@@ -209,7 +209,7 @@
 }
 
 .skeleton-card {
-  background: rgba(19, 19, 26, 0.85);
+  background: var(--dark-card, rgba(19, 19, 26, 0.85));
   border: 1px solid rgba(181, 55, 242, 0.15);
   border-radius: 14px;
   padding: 24px;
@@ -428,7 +428,7 @@
 }
 
 .flashcard-front {
-  background: rgba(19, 19, 26, 0.9);
+  background: var(--dark-card, rgba(19, 19, 26, 0.9));
   border: 1px solid rgba(249, 115, 22, 0.25);
   backdrop-filter: blur(12px);
   &::before {
@@ -503,7 +503,7 @@
 .question-item {
   display: flex;
   gap: 16px;
-  background: rgba(19, 19, 26, 0.85);
+  background: var(--dark-card, rgba(19, 19, 26, 0.85));
   border: 1px solid rgba(6, 182, 212, 0.2);
   border-radius: 14px;
   padding: 18px;
@@ -727,155 +727,4 @@
   &--light        { background: #7c3aed; border: 1px solid rgba(0,0,0,0.1); }
   &--light-rose   { background: #e11d48; border: 1px solid rgba(0,0,0,0.1); }
   &--light-ocean  { background: #0284c7; border: 1px solid rgba(0,0,0,0.1); }
-}
-
-// ── LIGHT THEMES — ALL FIXES ──────────────────────────────
-body.theme-light,
-body.theme-light-rose,
-body.theme-light-ocean {
-
-  .input-card,
-  .result-card {
-    background: var(--dark-card) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .flashcard-front {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .flashcard-back {
-    background: rgba(255, 255, 255, 0.85) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .card-label {
-    color: var(--neon-primary) !important;
-    -webkit-text-fill-color: var(--neon-primary) !important;
-    opacity: 1 !important;
-  }
-
-  .flashcard-back .card-label {
-    color: var(--neon-secondary) !important;
-    -webkit-text-fill-color: var(--neon-secondary) !important;
-  }
-
-  .card-content {
-    color: var(--text-primary) !important;
-    -webkit-text-fill-color: var(--text-primary) !important;
-  }
-
-  .card-tap-hint {
-    color: var(--text-secondary) !important;
-    -webkit-text-fill-color: var(--text-secondary) !important;
-  }
-
-  .section-header h2 {
-    color: var(--text-primary) !important;
-    -webkit-text-fill-color: var(--text-primary) !important;
-  }
-
-  .section-hint {
-    color: var(--text-secondary) !important;
-    -webkit-text-fill-color: var(--text-secondary) !important;
-  }
-
-  .count-badge {
-    color: var(--neon-primary) !important;
-    -webkit-text-fill-color: var(--neon-primary) !important;
-  }
-
-  .question-item {
-    background: rgba(255, 255, 255, 0.85) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .question-number {
-    color: var(--neon-primary) !important;
-    -webkit-text-fill-color: var(--neon-primary) !important;
-    background: rgba(0,0,0,0.04) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .question-text {
-    color: var(--text-primary) !important;
-    -webkit-text-fill-color: var(--text-primary) !important;
-  }
-
-  .answer-box {
-    background: rgba(0,0,0,0.03) !important;
-    border-left-color: var(--neon-primary) !important;
-  }
-
-  .answer-label {
-    color: var(--neon-primary) !important;
-    -webkit-text-fill-color: var(--neon-primary) !important;
-  }
-
-  .answer-text {
-    color: var(--text-primary) !important;
-    -webkit-text-fill-color: var(--text-primary) !important;
-  }
-
-  .reveal-btn {
-    color: var(--neon-primary) !important;
-    border-color: var(--dark-border) !important;
-    background: rgba(0,0,0,0.04) !important;
-    &:hover {
-      background: rgba(0,0,0,0.08) !important;
-      border-color: var(--neon-primary) !important;
-    }
-  }
-
-  .summary-text {
-    color: var(--text-primary) !important;
-    -webkit-text-fill-color: var(--text-primary) !important;
-  }
-
-  .format-hint {
-    color: var(--neon-primary) !important;
-    -webkit-text-fill-color: var(--neon-primary) !important;
-    background: rgba(0,0,0,0.03) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .stat-label {
-    color: var(--text-secondary) !important;
-    -webkit-text-fill-color: var(--text-secondary) !important;
-  }
-
-  .stat-value {
-    background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .skeleton-card {
-    background: var(--dark-card) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .skeleton-status {
-    background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .tab-buttons button {
-    color: var(--text-secondary) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .pdf-upload {
-    border-color: var(--dark-border) !important;
-    color: var(--text-secondary) !important;
-  }
-
-  .dashboard-toolbar {
-    background: var(--dark-card) !important;
-    border-bottom-color: var(--dark-border) !important;
-  }
 }

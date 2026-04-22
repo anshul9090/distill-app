@@ -16,8 +16,8 @@ $transition:    all 0.25s ease;
 // ─── Host reset ────────────────────────────────────────────────────────────────
 :host {
   display: block;
-  background: #07070d;
-  color: #fff;
+  background: var(--dark-bg, #07070d);
+  color: var(--text-primary, #fff);
   font-family: 'Sora', 'Segoe UI', sans-serif;
   min-height: 100vh;
   position: relative;
@@ -684,7 +684,7 @@ $transition:    all 0.25s ease;
 }
 
 // ─── Features grid ────────────────────────────────────────────────────────────
-.features-section { background: #07070d; }
+.features-section { background: var(--dark-bg); }
 
 .features-grid {
   display: grid;
@@ -847,198 +847,5 @@ $transition:    all 0.25s ease;
   .stats-bar .stat-divider { display: none; }
   .footer { flex-direction: column; text-align: center;
     .footer-links { justify-content: center; }
-  }
-}
-// ─── THEME ADAPTATIONS ────────────────────────────────────────────────────────
-
-// Light themes need dark text and adjusted backgrounds
-body.theme-light,
-body.theme-light-rose,
-body.theme-light-ocean {
-
-  app-landing :host,
-  app-landing {
-    background: var(--dark-bg) !important;
-    color: var(--text-primary) !important;
-  }
-
-  .navbar {
-    &.scrolled {
-      background: rgba(245, 244, 248, 0.92) !important;
-      border-bottom-color: var(--dark-border) !important;
-    }
-    .brand-name {
-      background: linear-gradient(135deg, var(--text-primary) 0%, var(--neon-primary) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
-    .btn-ghost {
-      color: var(--text-secondary) !important;
-      border-color: var(--dark-border) !important;
-      &:hover { color: var(--text-primary) !important; border-color: var(--neon-primary) !important; }
-    }
-  }
-
-  .login-panel {
-    background: rgba(0,0,0,0.03) !important;
-    border-right-color: var(--dark-border) !important;
-  }
-
-  .login-brand {
-    h1 { color: var(--text-primary) !important; }
-    .login-sub { color: var(--text-secondary) !important; }
-  }
-
-  .login-form {
-    .field-group label { color: var(--text-secondary) !important; }
-
-    .input-wrap input {
-      background: rgba(255,255,255,0.8) !important;
-      border-color: var(--dark-border) !important;
-      color: var(--text-primary) !important;
-
-      &::placeholder { color: rgba(0,0,0,0.3) !important; }
-      &:focus {
-        border-color: var(--neon-primary) !important;
-        background: #fff !important;
-        box-shadow: 0 0 0 3px rgba(124,58,237,0.1) !important;
-      }
-    }
-
-    .forgot-link { color: var(--neon-primary) !important; }
-    .eye-btn { color: var(--text-secondary) !important; }
-  }
-
-  .register-prompt {
-    color: var(--text-secondary) !important;
-    a { color: var(--neon-primary) !important; }
-  }
-
-  .social-proof {
-    color: var(--neon-primary) !important;
-    border-color: var(--dark-border) !important;
-    background: rgba(124,58,237,0.06) !important;
-  }
-
-  .format-pills {
-    border-top-color: var(--dark-border) !important;
-    .pills-label { color: var(--text-secondary) !important; }
-    .pill {
-      color: var(--neon-primary) !important;
-      border-color: var(--dark-border) !important;
-      background: rgba(124,58,237,0.06) !important;
-      &:hover { background: rgba(124,58,237,0.12) !important; color: var(--text-primary) !important; }
-    }
-  }
-
-  .video-panel-content {
-    .video-eyebrow { color: var(--neon-primary) !important; }
-    .video-headline { color: var(--text-primary) !important; }
-    .video-desc { color: var(--text-secondary) !important; }
-  }
-
-  .browser-mockup {
-    background: rgba(255,255,255,0.7) !important;
-    border-color: var(--dark-border) !important;
-    .chrome-bar {
-      background: rgba(0,0,0,0.04) !important;
-      border-bottom-color: var(--dark-border) !important;
-      .url-bar { color: var(--text-secondary) !important; }
-    }
-  }
-
-  .stats-bar {
-    background: rgba(0,0,0,0.02) !important;
-    border-color: var(--dark-border) !important;
-    .stat-item {
-      .stat-num {
-        background: linear-gradient(135deg, var(--text-primary), var(--neon-primary));
-        -webkit-background-clip: text;
-        background-clip: text;
-      }
-      .stat-label { color: var(--text-secondary) !important; }
-    }
-    .stat-divider { background: var(--dark-border) !important; }
-  }
-
-  .section {
-    h2 { color: var(--text-primary) !important; }
-    .section-label { color: var(--neon-primary) !important; }
-    .section-sub { color: var(--text-secondary) !important; }
-  }
-
-  .how-it-works {
-    background: rgba(0,0,0,0.02) !important;
-    border-color: var(--dark-border) !important;
-  }
-
-  .step-card {
-    background: rgba(255,255,255,0.6) !important;
-    border-color: var(--dark-border) !important;
-    h3 { color: var(--text-primary) !important; }
-    p  { color: var(--text-secondary) !important; }
-    .step-num-circle {
-      color: var(--neon-primary) !important;
-      border-color: var(--dark-border) !important;
-      background: rgba(124,58,237,0.06) !important;
-    }
-    &:hover { border-color: var(--neon-primary) !important; }
-  }
-
-  .features-section { background: var(--dark-bg) !important; }
-
-  .feature-card {
-    background: rgba(255,255,255,0.6) !important;
-    border-color: var(--dark-border) !important;
-    h3 { color: var(--text-primary) !important; }
-    p  { color: var(--text-secondary) !important; }
-    .feature-icon-wrap {
-      background: rgba(124,58,237,0.06) !important;
-      border-color: var(--dark-border) !important;
-    }
-    &:hover {
-      background: rgba(124,58,237,0.08) !important;
-      border-color: var(--neon-primary) !important;
-    }
-  }
-
-  .cta-section {
-    h2 { color: var(--text-primary) !important; }
-    p  { color: var(--text-secondary) !important; }
-    .cta-note { color: var(--text-secondary) !important; }
-  }
-
-  .footer {
-    border-top-color: var(--dark-border) !important;
-    .footer-copy { color: var(--text-secondary) !important; }
-    .footer-links a {
-      color: var(--text-secondary) !important;
-      &:hover { color: var(--neon-primary) !important; }
-    }
-  }
-
-  .dot-grid {
-    background-image: radial-gradient(circle, rgba(124,58,237,0.15) 1px, transparent 1px) !important;
-  }
-}
-
-// Dark themes — ensure text is always white/visible
-body:not(.theme-light):not(.theme-light-rose):not(.theme-light-ocean) {
-  app-landing .login-brand h1,
-  app-landing .video-headline,
-  app-landing .section h2,
-  app-landing .step-card h3,
-  app-landing .feature-card h3,
-  app-landing .cta-section h2 {
-    color: #ffffff !important;
-  }
-
-  app-landing .login-sub,
-  app-landing .video-desc,
-  app-landing .section-sub,
-  app-landing .step-card p,
-  app-landing .feature-card p,
-  app-landing .cta-section p {
-    color: rgba(255,255,255,0.55) !important;
   }
 }
