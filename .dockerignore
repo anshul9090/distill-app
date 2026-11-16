@@ -1,0 +1,107 @@
+# flyctl launch added from .gitignore
+# Secrets - NEVER commit these
+**/appsettings.Development.json
+**/appsettings.Production.json
+
+# .NET
+**/**/bin
+**/**/obj
+**/*.user
+**/*.suo
+**/.vs
+**/*.log
+
+# Node / Angular
+**/**/node_modules
+**/dist
+**/.angular
+
+# Env files
+**/.env
+**/.env.*
+
+# DB
+**/*.sqlite
+**/*.db
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# flyctl launch added from GlobalTextSummarizer/.gitignore
+# Secrets - NEVER commit these
+GlobalTextSummarizer/**/appsettings.Development.json
+GlobalTextSummarizer/**/appsettings.Production.json
+
+# .NET
+GlobalTextSummarizer/**/**/bin
+GlobalTextSummarizer/**/**/obj
+GlobalTextSummarizer/**/*.user
+GlobalTextSummarizer/**/*.suo
+GlobalTextSummarizer/**/.vs
+GlobalTextSummarizer/**/*.log
+
+# Node / Angular
+GlobalTextSummarizer/**/**/node_modules
+GlobalTextSummarizer/**/dist
+GlobalTextSummarizer/**/.angular
+
+# Env files
+GlobalTextSummarizer/**/.env
+GlobalTextSummarizer/**/.env.*
+
+# DB
+GlobalTextSummarizer/**/*.sqlite
+GlobalTextSummarizer/**/*.db
+
+# OS
+GlobalTextSummarizer/**/.DS_Store
+GlobalTextSummarizer/**/Thumbs.db
+
+# flyctl launch added from GlobalTextSummarizerUI/.gitignore
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+GlobalTextSummarizerUI/dist
+GlobalTextSummarizerUI/tmp
+GlobalTextSummarizerUI/out-tsc
+GlobalTextSummarizerUI/bazel-out
+
+# Node
+GlobalTextSummarizerUI/node_modules
+GlobalTextSummarizerUI/**/npm-debug.log
+GlobalTextSummarizerUI/**/yarn-error.log
+
+# IDEs and editors
+GlobalTextSummarizerUI/**/.idea
+GlobalTextSummarizerUI/**/.project
+GlobalTextSummarizerUI/**/.classpath
+GlobalTextSummarizerUI/**/.c9
+GlobalTextSummarizerUI/**/*.launch
+GlobalTextSummarizerUI/**/.settings
+GlobalTextSummarizerUI/**/*.sublime-workspace
+
+# Visual Studio Code
+GlobalTextSummarizerUI/**/.vscode/*
+!GlobalTextSummarizerUI/**/.vscode/settings.json
+!GlobalTextSummarizerUI/**/.vscode/tasks.json
+!GlobalTextSummarizerUI/**/.vscode/launch.json
+!GlobalTextSummarizerUI/**/.vscode/extensions.json
+!GlobalTextSummarizerUI/**/.vscode/mcp.json
+GlobalTextSummarizerUI/**/.history/*
+
+# Miscellaneous
+GlobalTextSummarizerUI/.angular/cache
+GlobalTextSummarizerUI/**/.sass-cache
+GlobalTextSummarizerUI/connect.lock
+GlobalTextSummarizerUI/coverage
+GlobalTextSummarizerUI/libpeerconnection.log
+GlobalTextSummarizerUI/**/testem.log
+GlobalTextSummarizerUI/typings
+GlobalTextSummarizerUI/**/__screenshots__
+
+# System files
+GlobalTextSummarizerUI/**/.DS_Store
+GlobalTextSummarizerUI/**/Thumbs.db
+fly.toml
+.git

@@ -96,7 +96,8 @@ var allowedOrigins = builder.Environment.IsDevelopment()
     : new[]
     {
         "https://distill-app-anshul9090s-projects.vercel.app",
-        "https://distill-frontend-five.vercel.app"
+        "https://distill-frontend-five.vercel.app",
+        "https://distill-frontend-pi.vercel.app"
     };
 
 builder.Services.AddCors(options =>
