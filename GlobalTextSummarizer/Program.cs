@@ -136,13 +136,13 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // ── MIGRATIONS + SEEDER ───────────────────────────────────
-// Disabled - run migrations manually via 'dotnet ef database update'
-// using (var scope = app.Services.CreateScope())
-// {
-//     var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
-//     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
-//     await db.Database.MigrateAsync();
-//     await seeder.SeedAsync();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    await db.Database.MigrateAsync();
+    await seeder.SeedAsync();
+}
 
 // ── MIDDLEWARE PIPELINE ───────────────────────────────────
 if (app.Environment.IsDevelopment())
