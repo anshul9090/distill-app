@@ -25,13 +25,16 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "Set ConnectionStrings__DefaultConnection environment variable.");
 
 // Fix: ensure sslmode=require is present (Npgsql requires it, some hosts cache old values)
-if (connectionString.Contains("?sslmode") && !connectionString.Contains("?sslmode=require"))
+if (!connectionString.Contains("sslmode=require"))
 {
-    connectionString = connectionString.Replace("?sslmode", "?sslmode=require");
-}
-else if (!connectionString.Contains("?sslmode"))
-{
-    connectionString += "?sslmode=require";
+    if (System.Text.RegularExpressions.Regex.IsMatch(connectionString, @"\?sslmode(?:=[^&]*)?"))
+    {
+        connectionString = System.Text.RegularExpressions.Regex.Replace(connectionString, @"\?sslmode(?:=[^&]*)?", "?sslmode=require");
+    }
+    else
+    {
+        connectionString += "?sslmode=require";
+    }
 }
 
 builder.Services.AddDbContext<SummarizerDbContext>(options =>
