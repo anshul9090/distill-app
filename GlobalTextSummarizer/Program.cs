@@ -19,22 +19,10 @@ var builder = WebApplication.CreateBuilder(args);
 // ── DATABASE ─────────────────────────────────────────────
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-if (string.IsNullOrWhiteSpace(connectionString))
-    throw new InvalidOperationException(
-        "Database connection string is not configured. " +
-        "Set ConnectionStrings__DefaultConnection environment variable.");
-
-// Fix: ensure sslmode=require is present (Npgsql requires it, some hosts cache old values)
-if (!connectionString.Contains("sslmode=require"))
+// Force correct connection string with sslmode=require (Fly.io caches old values)
+if (string.IsNullOrWhiteSpace(connectionString) || !connectionString.Contains("sslmode=require"))
 {
-    if (System.Text.RegularExpressions.Regex.IsMatch(connectionString, @"\?sslmode(?:=[^&]*)?"))
-    {
-        connectionString = System.Text.RegularExpressions.Regex.Replace(connectionString, @"\?sslmode(?:=[^&]*)?", "?sslmode=require");
-    }
-    else
-    {
-        connectionString += "?sslmode=require";
-    }
+    connectionString = "postgresql://neondb_owner:npg_JGHd7q9ZDFMz@ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
 }
 
 builder.Services.AddDbContext<SummarizerDbContext>(options =>
