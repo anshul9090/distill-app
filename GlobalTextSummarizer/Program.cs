@@ -17,16 +17,15 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── DATABASE ─────────────────────────────────────────────
+// Database connection is configured via environment variable ConnectionStrings__DefaultConnection
+// Set this in your hosting provider (Fly.io, Railway, etc.) with a valid PostgreSQL connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Force correct connection string with sslmode=require (Fly.io caches old values)
-if (string.IsNullOrWhiteSpace(connectionString) || !connectionString.Contains("sslmode=require"))
+if (!string.IsNullOrWhiteSpace(connectionString))
 {
-    connectionString = "postgresql://neondb_owner:npg_JGHd7q9ZDFMz@ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
+    builder.Services.AddDbContext<SummarizerDbContext>(options =>
+        options.UseNpgsql(connectionString));
 }
-
-builder.Services.AddDbContext<SummarizerDbContext>(options =>
-    options.UseNpgsql(connectionString));
 
 // ── SERVICES ──────────────────────────────────────────────
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -49,9 +48,9 @@ builder.Services.Configure<IpRateLimitOptions>(options =>
     options.GeneralRules = new List<RateLimitRule>
     {
         new RateLimitRule { Endpoint = "POST:/api/summary/summarize",       Limit = 10, Period = "1m" },
-        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-pdf",   Limit = 10, Period = "1m" },
-        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-url",   Limit = 10, Period = "1m" },
-        new RateLimitRule { Endpoint = "POST:/api/summary/summarize-image", Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/summary/summary-pdf",   Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/summary/summary-url",   Limit = 10, Period = "1m" },
+        new RateLimitRule { Endpoint = "POST:/api/summary/summary-image", Limit = 10, Period = "1m" },
         new RateLimitRule { Endpoint = "POST:/api/auth/login",              Limit = 5,  Period = "1m" },
         new RateLimitRule { Endpoint = "POST:/api/otp/send",                Limit = 3,  Period = "5m" }
     };
@@ -140,15 +139,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
-
-// ── MIGRATIONS + SEEDER ───────────────────────────────────
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
-    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
-    await db.Database.MigrateAsync();
-    await seeder.SeedAsync();
-}
 
 // ── MIDDLEWARE PIPELINE ───────────────────────────────────
 if (app.Environment.IsDevelopment())
