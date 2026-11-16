@@ -17,8 +17,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── DATABASE ─────────────────────────────────────────────
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "postgresql://neondb_owner:npg_JGHd7q9ZDFMz@ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
+var connectionString = "postgresql://neondb_owner:npg_JGHd7q9ZDFMz@ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
 
 if (!string.IsNullOrWhiteSpace(connectionString))
 {
