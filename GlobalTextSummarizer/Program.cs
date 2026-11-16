@@ -17,8 +17,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── DATABASE ─────────────────────────────────────────────
-// Database connection is configured via environment variable ConnectionStrings__DefaultConnection
-// Set this in your hosting provider (Fly.io, Railway, etc.) with a valid PostgreSQL connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "postgresql://neondb_owner:npg_JGHd7q9ZDFMz@ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
 
@@ -140,6 +138,15 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// ── MIGRATIONS + SEEDER ───────────────────────────────────
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    await db.Database.MigrateAsync();
+    await seeder.SeedAsync();
+}
 
 // ── MIDDLEWARE PIPELINE ───────────────────────────────────
 if (app.Environment.IsDevelopment())
