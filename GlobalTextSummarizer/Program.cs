@@ -22,7 +22,17 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 if (string.IsNullOrWhiteSpace(connectionString))
     throw new InvalidOperationException(
         "Database connection string is not configured. " +
-        "Set ConnectionStrings__DefaultConnection in Railway environment variables.");
+        "Set ConnectionStrings__DefaultConnection environment variable.");
+
+// Fix: ensure sslmode=require is present (Npgsql requires it, some hosts cache old values)
+if (connectionString.Contains("?sslmode") && !connectionString.Contains("?sslmode=require"))
+{
+    connectionString = connectionString.Replace("?sslmode", "?sslmode=require");
+}
+else if (!connectionString.Contains("?sslmode"))
+{
+    connectionString += "?sslmode=require";
+}
 
 builder.Services.AddDbContext<SummarizerDbContext>(options =>
     options.UseNpgsql(connectionString));
