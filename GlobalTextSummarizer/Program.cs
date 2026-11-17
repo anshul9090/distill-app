@@ -17,13 +17,14 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── DATABASE ─────────────────────────────────────────────
-var connectionString = "postgresql://neondb_owner:npg_JGHd7q9ZDFMz@ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-if (!string.IsNullOrWhiteSpace(connectionString))
-{
-    builder.Services.AddDbContext<SummarizerDbContext>(options =>
-        options.UseNpgsql(connectionString));
-}
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new InvalidOperationException(
+        "ConnectionStrings__DefaultConnection environment variable is required.");
+
+builder.Services.AddDbContext<SummarizerDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // ── SERVICES ──────────────────────────────────────────────
 builder.Services.AddScoped<IAuthService, AuthService>();
