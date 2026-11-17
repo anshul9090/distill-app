@@ -138,10 +138,18 @@ var app = builder.Build();
 // ── MIGRATIONS + SEEDER ───────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
-    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
-    await db.Database.MigrateAsync();
-    await seeder.SeedAsync();
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
+        var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+        await db.Database.MigrateAsync();
+        await seeder.SeedAsync();
+    }
+    catch (Exception ex)
+    {
+        // Log but don't crash - app can still run without DB for basic endpoints
+        Console.WriteLine($"Database migration/seeding failed: {ex.Message}");
+    }
 }
 
 // ── MIDDLEWARE PIPELINE ───────────────────────────────────
