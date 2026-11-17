@@ -1,12 +1,10 @@
 ﻿using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Summarizer.Application.Interfaces;
 using Summarizer.Domain.Entities;
-using Summarizer.Infrastructure.Data;
 using Summarizer.Infrastructure.Email;
 using Summarizer.Infrastructure.Seed;
 using Summarizer.Infrastructure.Services;
@@ -17,13 +15,9 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── DATABASE ─────────────────────────────────────────────
-var connectionString = "postgresql://neondb_owner:npg_JGHd7q9ZDFMz@ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
-
-if (!string.IsNullOrWhiteSpace(connectionString))
-{
-    builder.Services.AddDbContext<SummarizerDbContext>(options =>
-        options.UseNpgsql(connectionString));
-}
+// Database connection is configured via environment variable ConnectionStrings__DefaultConnection
+// Set this in your hosting provider (Fly.io, Railway, etc.)
+// DbContext is NOT registered here - add it back once you have a working connection string
 
 // ── SERVICES ──────────────────────────────────────────────
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -96,7 +90,7 @@ var allowedOrigins = builder.Environment.IsDevelopment()
         "https://distill-app-anshul9090s-projects.vercel.app",
         "https://distill-frontend-five.vercel.app",
         "https://distill-frontend-pi.vercel.app",
-        "https://distill-frontend-1gbt88uzm-anshu1s-projects.vercel.app"
+        "https://distill-frontend-1gbt88uzm-anshul9090s-projects.vercel.app"
     };
 
 builder.Services.AddCors(options =>
@@ -137,15 +131,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
-
-// ── MIGRATIONS + SEEDER ───────────────────────────────────
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<SummarizerDbContext>();
-    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
-    await db.Database.MigrateAsync();
-    await seeder.SeedAsync();
-}
 
 // ── MIDDLEWARE PIPELINE ───────────────────────────────────
 if (app.Environment.IsDevelopment())
