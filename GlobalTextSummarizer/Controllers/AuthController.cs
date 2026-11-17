@@ -19,28 +19,56 @@ namespace GlobalTextSummarizer.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
-            var result = await _authService.Register(request);
-            return Ok(result);
+            try
+            {
+                var result = await _authService.Register(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Database connection unavailable", detail = ex.Message });
+            }
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            var result = await _authService.Login(request);
-            return Ok(result);
+            try
+            {
+                var result = await _authService.Login(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Database connection unavailable", detail = ex.Message });
+            }
         }
         [HttpPost("refreshtoken")]
         public async Task<IActionResult> RefreshToken(RefreshTokenRequest request)
         {
-            var result = await _authService.RefreshToken(request);
-            return Ok(result);
+            try
+            {
+                var result = await _authService.RefreshToken(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Database connection unavailable", detail = ex.Message });
+            }
         }
 
         [HttpPost("logout")]
         [Authorize]
         public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest request)
         {
-            await _authService.LogoutAsync(request.Token!);
-            return Ok(new { message = "Logged out successfully" });
+            try
+            {
+                await _authService.LogoutAsync(request.Token!);
+                return Ok(new { message = "Logged out successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Database connection unavailable", detail = ex.Message });
+            }
         }
     }
 }

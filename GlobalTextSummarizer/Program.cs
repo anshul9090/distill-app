@@ -168,6 +168,22 @@ app.UseIpRateLimiting();
 app.UseCors("AllowAngular");
 app.UseAuthentication();
 app.UseAuthorization();
+
+// ── GLOBAL EXCEPTION HANDLER ────────────────────────────────
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync($"{{\"error\":\"{ex.Message}\"}}");
+    }
+});
+
 app.MapControllers();
 app.Run();
 
