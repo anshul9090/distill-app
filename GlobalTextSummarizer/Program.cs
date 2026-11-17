@@ -1,10 +1,12 @@
 ﻿using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Summarizer.Application.Interfaces;
 using Summarizer.Domain.Entities;
+using Summarizer.Infrastructure.Data;
 using Summarizer.Infrastructure.Email;
 using Summarizer.Infrastructure.Seed;
 using Summarizer.Infrastructure.Services;
@@ -15,13 +17,11 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── DATABASE ─────────────────────────────────────────────
-var connectionString = "postgresql://neondb_owner:npg_JGHd7q9ZDFMz@ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "postgresql://neondb_owner:npg_JGHd7q9ZDFMz@ep-late-cherry-amnwde9q-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
 
-if (!string.IsNullOrWhiteSpace(connectionString))
-{
-    builder.Services.AddDbContext<SummarizerDbContext>(options =>
-        options.UseNpgsql(connectionString));
-}
+builder.Services.AddDbContext<SummarizerDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // ── SERVICES ──────────────────────────────────────────────
 builder.Services.AddScoped<IAuthService, AuthService>();
